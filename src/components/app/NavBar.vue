@@ -23,10 +23,9 @@ export default {
   setup() {
     const userPhoto = ref('');
     const userName = ref('');
-    const baseImageUrl = 'https://api.telegram.org/file/bot6995596109:AAGNHDoHuSdzkgbbearnVRCjROEhBPCCivI/'; // Замініть <your_bot_token> на ваш бот-токен
 
     const fullUserPhotoUrl = computed(() => {
-      return userPhoto.value ? baseImageUrl + userPhoto.value : defaultUserPhoto;
+      return userPhoto.value || defaultUserPhoto;
     });
 
     const fetchUserData = () => {
@@ -40,18 +39,7 @@ export default {
 
     const loadUserPhoto = (photoUrl) => {
       if (photoUrl) {
-        // Імітуємо завантаження фото користувача
-        fetch(photoUrl)
-            .then(response => {
-              if (response.ok) {
-                userPhoto.value = photoUrl;
-              } else {
-                throw new Error('Failed to load user photo');
-              }
-            })
-            .catch(() => {
-              userPhoto.value = defaultUserPhoto;
-            });
+        userPhoto.value = photoUrl;
       } else {
         userPhoto.value = defaultUserPhoto;
       }
