@@ -33,17 +33,17 @@ export default {
       const tg = window.Telegram.WebApp;
 
       tg.ready(() => {
-        alert('Telegram WebApp is ready');
-        alert('initDataUnsafe:', tg.initDataUnsafe);
+        console.log('Telegram WebApp is ready');
+        console.log('initDataUnsafe:', tg.initDataUnsafe);
 
-        const user = tg.initDataUnsafe.user;
+        const user = tg.initDataUnsafe?.user;
         if (user) {
           userName.value = user.first_name || 'Імя клієнта';
           userId.value = user.id || '';
           loadUserPhoto(user.photo_url);
           saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
         } else {
-          alert('No user data found in initDataUnsafe');
+          console.error('No user data found in initDataUnsafe');
         }
       });
     };
@@ -56,8 +56,10 @@ export default {
       }
     };
 
-    const saveUserDataToLocalStorage = (id) => {
+    const saveUserDataToLocalStorage = (id, name, photoUrl) => {
       localStorage.setItem('telegram_user_id', id);
+      localStorage.setItem('telegram_user_name', name);
+      localStorage.setItem('telegram_user_photo_url', photoUrl);
     };
 
     onMounted(() => {
