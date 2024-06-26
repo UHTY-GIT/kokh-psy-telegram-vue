@@ -5,7 +5,7 @@
         <img :src="fullUserPhotoUrl" alt="user photo">
       </div>
       <span class="container-user-name">
-        {{ userName }}
+        {{ userName }} (ID: {{ userId }})
       </span>
     </div>
     <div class="logotype-psychology">
@@ -23,6 +23,7 @@ export default {
   setup() {
     const userPhoto = ref('');
     const userName = ref('');
+    const userId = ref('');
 
     const fullUserPhotoUrl = computed(() => {
       return userPhoto.value || defaultUserPhoto;
@@ -32,8 +33,16 @@ export default {
       const tg = window.Telegram.WebApp;
 
       tg.ready(() => {
-        userName.value = tg.initDataUnsafe.user?.first_name || 'Імя клієнта';
-        loadUserPhoto(tg.initDataUnsafe.user?.photo_url);
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+          userName.value = user.first_name || 'Імя клієнта';
+          userId.value = user.id || '';
+          loadUserPhoto(user.photo_url);
+          saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
+
+          // Вивести всі дані, отримані з Telegram, у консоль
+          console.log('Received data from Telegram:', tg.initDataUnsafe);
+        }
       });
     };
 
@@ -45,6 +54,12 @@ export default {
       }
     };
 
+    const saveUserDataToLocalStorage = (id, name, photoUrl) => {
+      localStorage.setItem('telegram_user_id', id);
+      localStorage.setItem('telegram_user_name', name);
+      localStorage.setItem('telegram_user_photo_url', photoUrl);
+    };
+
     onMounted(() => {
       fetchUserData();
     });
@@ -52,6 +67,7 @@ export default {
     return {
       fullUserPhotoUrl,
       userName,
+      userId,
     };
   }
 }

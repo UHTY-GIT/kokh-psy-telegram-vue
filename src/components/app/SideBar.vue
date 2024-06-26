@@ -26,21 +26,21 @@
   </div>
 </template>
 <script>
-import faq from '@/assets/icons/telegram-faq.svg';
+//import faq from '@/assets/icons/telegram-faq.svg';
 import home from '@/assets/icons/telegram-home.svg'
-import payment from '@/assets/icons/telegram-payment.svg'
-import sessionClient from '@/assets/icons/telegram-session-client.svg'
+//import payment from '@/assets/icons/telegram-payment.svg'
+//import sessionClient from '@/assets/icons/telegram-session-client.svg'
 import statistics from '@/assets/icons/telegram-statistics.svg'
 
 export default {
   name: 'SideBar',
   data: () => ({
     links: [
-      {title: 'Сесії клієнта', url: '/session-client', exact: true, icon: sessionClient},
+      // {title: 'Сесії клієнта', url: '/session-client', exact: true, icon: sessionClient},
       {title: 'Статистика клієнта', url: '/statistic-client', exact: true, icon: statistics},
       {title: 'Головна', url: '/', icon: home},
-      {title: 'Оплата', url: '/payment', exact: true, icon: payment},
-      {title: 'Часті питання', url: '/faq', exact: true, icon: faq},
+      // {title: 'Оплата', url: '/payment', exact: true, icon: payment},
+      // {title: 'Часті питання', url: '/faq', exact: true, icon: faq},
     ],
   })
 }
