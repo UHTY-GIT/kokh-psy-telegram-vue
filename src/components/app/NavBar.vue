@@ -37,11 +37,14 @@ export default {
         console.log('initDataUnsafe:', tg.initDataUnsafe);
 
         const user = tg.initDataUnsafe.user;
-        userName.value = user.first_name || 'Імя клієнта';
-        userId.value = user.id || '1';
-        loadUserPhoto(user.photo_url);
-        saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
-
+        if (user) {
+          userName.value = user.first_name || 'Імя клієнта';
+          userId.value = user.id || '';
+          loadUserPhoto(user.photo_url);
+          saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
+        } else {
+          console.error('No user data found in initDataUnsafe');
+        }
       });
     };
 
