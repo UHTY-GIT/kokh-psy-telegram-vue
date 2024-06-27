@@ -1,3 +1,4 @@
+<!--src/components/app/NavBar.vue-->
 <template>
   <div class="background-navbar">
     <div class="container-user-photo">
@@ -10,6 +11,12 @@
     </div>
     <div class="logotype-psychology">
       <img src="@/assets/photo/favicon-5.png" alt="logotype">
+    </div>
+    <div class="error-messages">
+      1
+      <ul>
+        <li v-for="error in errors" :key="error">{{ error }}</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -24,6 +31,7 @@ export default {
     const userPhoto = ref('');
     const userName = ref('');
     const userId = ref('');
+    const errors = ref([]);
 
     const fullUserPhotoUrl = computed(() => {
       return userPhoto.value || defaultUserPhoto;
@@ -32,9 +40,20 @@ export default {
     const fetchUserData = () => {
       const tg = window.Telegram.WebApp;
 
+      if (!tg) {
+        errors.value.push('Telegram WebApp object is not available.');
+        return;
+      }
+
       tg.ready(() => {
-        console.log('Telegram WebApp is ready');
-        console.log('initDataUnsafe:', tg.initDataUnsafe);
+        errors.value.push('Telegram WebApp is ready');
+        errors.value.push('initDataUnsafe:', tg.initDataUnsafe);
+        errors.value.push(`initDataUnsafe1: ${JSON.stringify(tg.initDataUnsafe)}`);
+
+        if (!tg.initDataUnsafe) {
+          errors.value.push('No initDataUnsafe available.');
+          return;
+        }
 
         const user = tg.initDataUnsafe.user;
         if (user) {
@@ -43,7 +62,7 @@ export default {
           loadUserPhoto(user.photo_url);
           saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
         } else {
-          console.error('No user data found in initDataUnsafe');
+          errors.value.push('No user data found in initDataUnsafe.');
         }
       });
     };
@@ -70,6 +89,7 @@ export default {
       fullUserPhotoUrl,
       userName,
       userId,
+      errors,
     };
   }
 }
