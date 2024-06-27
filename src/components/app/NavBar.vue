@@ -12,10 +12,8 @@
     <div class="logotype-psychology">
       <img src="@/assets/photo/favicon-5.png" alt="logotype">
     </div>
-
   </div>
-  <div class="error-messages">
-    1
+  <div class="error-messages" v-if="errors.length">
     <ul>
       <li v-for="error in errors" :key="error">{{ error }}</li>
     </ul>
@@ -40,34 +38,31 @@ export default {
 
     const fetchUserData = () => {
       const tg = window.Telegram.WebApp;
-      errors.value.push('запустилося');
-      errors.value.push('initDataUnsafe:', tg.initDataUnsafe);
-      errors.value.push(`initDataUnsafe1: ${JSON.stringify(tg.initDataUnsafe)}`);
+
       if (!tg) {
         errors.value.push('Telegram WebApp object is not available.');
         return;
       }
 
-      tg.ready(() => {
-        errors.value.push('Telegram WebApp is ready');
-        errors.value.push('initDataUnsafe:', tg.initDataUnsafe);
-        errors.value.push(`initDataUnsafe1: ${JSON.stringify(tg.initDataUnsafe)}`);
+      errors.value.push('запустилося');
+      errors.value.push(`initDataUnsafe: ${JSON.stringify(tg.initDataUnsafe)}`);
 
-        if (!tg.initDataUnsafe) {
-          errors.value.push('No initDataUnsafe available.');
-          return;
-        }
+      const initData = tg.initDataUnsafe;
 
-        const user = tg.initDataUnsafe.user;
-        if (user) {
-          userName.value = user.first_name || 'Імя клієнта';
-          userId.value = user.id || '';
-          loadUserPhoto(user.photo_url);
-          saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
-        } else {
-          errors.value.push('No user data found in initDataUnsafe.');
-        }
-      });
+      if (!initData) {
+        errors.value.push('No initDataUnsafe available.');
+        return;
+      }
+
+      const user = initData.user;
+      if (user) {
+        userName.value = user.first_name;
+        userId.value = user.id || '';
+        loadUserPhoto(user.photo_url);
+        saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
+      } else {
+        errors.value.push('No user data found in initDataUnsafe.');
+      }
     };
 
     const loadUserPhoto = (photoUrl) => {

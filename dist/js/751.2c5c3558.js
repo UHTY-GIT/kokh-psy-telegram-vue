@@ -1,2 +1,2 @@
 "use strict";(self["webpackChunkkokh_assistant_vue_telegram"]=self["webpackChunkkokh_assistant_vue_telegram"]||[]).push([[751],{132:function(t,e,n){n.r(e),n.d(e,{default:function(){return k}});var s=n(6768);const r=(0,s.Lk)("div",{class:"container-tittle"},[(0,s.Lk)("p",null," Часті питання "),(0,s.Lk)("hr",{class:"hr_title"})],-1),a=[r];function u(t,e){return(0,s.uX)(),(0,s.CE)("div",null,a)}var l=n(1241);const c={},i=(0,l.A)(c,[["render",u]]);var k=i}}]);
-//# sourceMappingURL=751.596f51fc.js.map
+//# sourceMappingURL=751.2c5c3558.js.map
