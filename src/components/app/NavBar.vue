@@ -12,12 +12,13 @@
     <div class="logotype-psychology">
       <img src="@/assets/photo/favicon-5.png" alt="logotype">
     </div>
-    <div class="error-messages">
-      1
-      <ul>
-        <li v-for="error in errors" :key="error">{{ error }}</li>
-      </ul>
-    </div>
+
+  </div>
+  <div class="error-messages">
+    1
+    <ul>
+      <li v-for="error in errors" :key="error">{{ error }}</li>
+    </ul>
   </div>
 </template>
 
@@ -39,7 +40,9 @@ export default {
 
     const fetchUserData = () => {
       const tg = window.Telegram.WebApp;
-
+      errors.value.push('запустилося');
+      errors.value.push('initDataUnsafe:', tg.initDataUnsafe);
+      errors.value.push(`initDataUnsafe1: ${JSON.stringify(tg.initDataUnsafe)}`);
       if (!tg) {
         errors.value.push('Telegram WebApp object is not available.');
         return;
