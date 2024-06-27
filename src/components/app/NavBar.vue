@@ -40,17 +40,17 @@ export default {
       const tg = window.Telegram.WebApp;
 
       if (!tg) {
-        errors.value.push('Telegram WebApp object is not available.');
+        errors.value.push('Telegram WebApp недоступний');
         return;
       }
 
-      errors.value.push('запустилося');
-      errors.value.push(`initDataUnsafe: ${JSON.stringify(tg.initDataUnsafe)}`);
+      //errors.value.push('запустилося');
+      //errors.value.push(`initDataUnsafe: ${JSON.stringify(tg.initDataUnsafe)}`);
 
       const initData = tg.initDataUnsafe;
 
       if (!initData) {
-        errors.value.push('No initDataUnsafe available.');
+        errors.value.push('Немає доступних даних');
         return;
       }
 
@@ -59,9 +59,9 @@ export default {
         userName.value = user.first_name;
         userId.value = user.id || '';
         loadUserPhoto(user.photo_url);
-        saveUserDataToLocalStorage(user.id, user.first_name, user.photo_url);
+        saveUserDataToLocalStorage(user.id);
       } else {
-        errors.value.push('No user data found in initDataUnsafe.');
+        errors.value.push('Не знайдено дані користувача');
       }
     };
 
@@ -73,10 +73,8 @@ export default {
       }
     };
 
-    const saveUserDataToLocalStorage = (id, name, photoUrl) => {
+    const saveUserDataToLocalStorage = (id) => {
       localStorage.setItem('telegram_user_id', id);
-      localStorage.setItem('telegram_user_name', name);
-      localStorage.setItem('telegram_user_photo_url', photoUrl);
     };
 
     onMounted(() => {
