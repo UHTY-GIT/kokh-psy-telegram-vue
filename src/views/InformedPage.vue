@@ -2,7 +2,7 @@
   <div>
     <div class="container-tittle">
       <p>
-        Часті питання
+        Інформована згода
       </p>
       <hr class="hr_title">
     </div>

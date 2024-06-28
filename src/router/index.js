@@ -14,10 +14,10 @@ const routes = [
     component: () => import('../views/StatisticPage.vue')
   },
   {
-    path: '/faq',
-    name: 'faq',
+    path: '/informed-consent',
+    name: 'infoConsent',
     meta: {layout: 'main'},
-    component: () => import('../views/FAQPage.vue')
+    component: () => import('../views/InformedPage.vue')
   },
 ]
 
