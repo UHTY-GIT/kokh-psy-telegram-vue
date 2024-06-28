@@ -27,10 +27,10 @@
 </template>
 <script>
 //import faq from '@/assets/icons/telegram-faq.svg';
-import home from '@/assets/icons/telegram-home.svg'
+import home from '@/assets/icons/home.png'
 //import payment from '@/assets/icons/telegram-payment.svg'
 //import sessionClient from '@/assets/icons/telegram-session-client.svg'
-import statistics from '@/assets/icons/telegram-statistics.svg'
+import statistics from '@/assets/icons/performance.png'
 
 export default {
   name: 'SideBar',

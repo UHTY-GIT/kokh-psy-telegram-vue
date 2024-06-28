@@ -139,7 +139,7 @@ body {
 
 .background-navbar {
     background-color: #72A8BA;
-    padding: 25px 25px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -187,6 +187,14 @@ body {
 .logotype-psychology img {
     width: 40px;
 }
+.block_menu_button {
+    position: fixed;
+}
+.block_menu_button nav {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+}
 .block_menu_button nav ul {
     display: flex;
     list-style: none;
@@ -207,6 +215,9 @@ body {
 }
 .block_menu_button nav ul li:hover {
     background-color: rgb(56, 94, 108);
+}
+.block_menu_button nav ul li img{
+    width: 25px;
 }
 nav ul li.active {
     background-color: #72A8BA !important;
