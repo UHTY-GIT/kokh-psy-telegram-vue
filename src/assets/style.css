@@ -235,13 +235,13 @@ nav ul li.active {
     background-color: #72A8BA !important;
 }
 .container-tittle {
-    width: 50%;
+    width: 60%;
 }
 .container-tittle p {
     font-family: "Nunito";
     font-style: normal;
     font-weight: 700;
-    font-size: 23px;
+    font-size: 20px;
     color: #494B55;
     margin: 0px 20px 10px;
     display: flex;
