@@ -22,7 +22,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import defaultUserPhoto from '@/assets/photo/Potted Plant.svg';
+import defaultUserPhoto from '@/assets/icons/emoji.iamrohit.png';
 
 export default {
   name: 'NavBar',

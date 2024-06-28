@@ -189,6 +189,8 @@ body {
 }
 .block_menu_button {
     position: fixed;
+    bottom: 0px;
+    background-color: #fdf8f3;
 }
 .block_menu_button nav {
     display: flex;
