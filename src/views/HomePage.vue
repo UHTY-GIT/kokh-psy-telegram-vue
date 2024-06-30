@@ -28,13 +28,6 @@
           </p>
         </div>
       </router-link>
-      <router-link to="/faq">
-        <div class="block-links-main">
-          <p>
-            Часті питання <img src="@/assets/icons/share.svg" alt="link">
-          </p>
-        </div>
-      </router-link>
     </div>
   </div>
 </template>

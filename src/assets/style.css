@@ -153,9 +153,10 @@ html, body {
 }
 
 .site-content {
-    flex: 1;
+    /* flex: 1; */
     overflow-y: auto;
     background-color: #FDF8F3;
+    height: 100vh;
 }
 
 .main-section {
@@ -302,4 +303,7 @@ nav ul li.active {
 }
 .block-links-main img {
     margin: 0px 0 0 7px;
+}
+.container-statistic div canvas {
+    height: 300px;
 }
