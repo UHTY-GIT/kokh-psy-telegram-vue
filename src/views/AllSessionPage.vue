@@ -17,6 +17,11 @@
       </div>
     </div>
   </div>
+  <div class="error-messages" v-if="errors.length">
+    <ul>
+      <li v-for="error in errors" :key="error">{{ error }}</li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -31,17 +36,20 @@ export default {
     const sessions = ref([]);
     const router = useRouter();
     const userId = ref('');
+    const errors = ref([]);
 
 
 
     const fetchSessions = async () => {
       try {
-        //const telegramID = localStorage.getItem('telegram_user_id');
+        const telegramID1 = localStorage.getItem('telegram_user_id');
+        errors.value.push('telegramID1 '+ telegramID1);
         const tg = window.Telegram.WebApp;
         const initData = tg.initDataUnsafe;
         const user = initData.user;
 
         const telegramID = user.id;
+        errors.value.push('telegramID '+ telegramID);
 
         const response = await apiService.getClientConsultations(telegramID);
         sessions.value = response.data.data;
@@ -68,6 +76,7 @@ export default {
       formatDate,
       goToSession,
       userId,
+      errors
     };
   }
 };
