@@ -19,6 +19,19 @@ const routes = [
     meta: {layout: 'main'},
     component: () => import('../views/InformedPage.vue')
   },
+  {
+    path: '/all-session',
+    name: 'allSessionClient',
+    meta: {layout: 'main'},
+    component: () => import('../views/AllSessionPage.vue')
+  },
+  {
+    path: '/one-session/:sessionId',
+    name: 'oneSessionClient',
+    meta: {layout: 'main'},
+    component: () => import('../views/OneSessionPage.vue'),
+    props: true // Enable props to be passed as route parameters
+  },
 ]
 
 const router = createRouter({

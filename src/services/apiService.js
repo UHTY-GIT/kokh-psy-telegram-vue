@@ -11,6 +11,26 @@ const apiService = {
             }
         };
         return axios.get(`${BASE_URL}/api/v1/customer/analytics/main`, config);
+    },
+
+    // Функція для виводу всіх сесій клієнта
+    getClientConsultations(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/consultations`, config);
+    },
+
+    // Функція для виводу конкретної сесії клієнта
+    getOneClientConsultation(telegramID, consultationID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/consultations/${consultationID}`, config);
     }
 }
 

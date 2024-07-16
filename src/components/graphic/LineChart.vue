@@ -1,5 +1,5 @@
 <template>
-  <LineChart :chartData="chartData" :chartOptions="chartOptions" />
+  <LineChart :chartData="chartData" :options="chartOptions" />
 </template>
 
 <script>
@@ -20,15 +20,16 @@ export default {
       labels: [],
       datasets: [
         {
-          label: 'Dataset 1',
+          label: '',
+          family: "Nunito",
           data: [],
           fill: true,
           backgroundColor: 'rgba(75,192,192,0.4)',
           borderColor: 'rgba(75,192,192,1)',
-          tension: 0.4
+          tension: 0.4,
         },
         {
-          label: 'Dataset 2',
+          label: '',
           data: [],
           fill: true,
           backgroundColor: 'rgba(255,135,128,0.4)',
@@ -42,30 +43,48 @@ export default {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top'
+          position: 'top',
+          labels: {
+            font: {
+              family: 'Nunito', // Change font family for legend labels
+              size: 14
+            }
+          }
         },
-        title: {
-          display: true,
-          text: 'Monthly Data'
-        }
+        // title: {
+        //   display: true,
+        //   text: 'Monthly Data',
+        //   font: {
+        //     size: 20
+        //   }
+        // },
       },
       scales: {
         x: {
           display: true,
           title: {
             display: true,
-            text: 'Month'
+            text: 'К-сть сесій',
+            font: {
+              size: 14,
+              family: "Nunito"
+            }
           }
         },
         y: {
           display: true,
           title: {
-            display: true,
-            text: 'Value'
+            display: false,
+            text: 'Значення',
+            font: {
+              size: 16,
+              family: "Nunito"
+            }
           }
         }
       }
     };
+
 
     const fetchData = async () => {
       try {
@@ -76,7 +95,7 @@ export default {
 
         const response = await apiService.getGraphicsClient(telegramID);
         const data = response.data.data;
-
+        console.log("data" + data);
         const datasetFirst = data.dataset_first.value.map(Number); // Convert values to numbers if needed
         const datasetSecond = data.dataset_second.value.map(Number); // Convert values to numbers if needed
 

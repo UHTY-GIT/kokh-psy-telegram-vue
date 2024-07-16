@@ -111,7 +111,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
     background-color: #FDF8F3;
 }
 
@@ -261,7 +261,7 @@ nav ul li.active {
 }
 .content-main p {
     font-family: "Nunito";
-    font-weight: 700;
+    font-weight: 500;
     font-size: 18px;
     color: #494B55;
 }
@@ -304,6 +304,70 @@ nav ul li.active {
 .block-links-main img {
     margin: 0px 0 0 7px;
 }
+.container-statistic {
+    margin: 10px;
+}
 .container-statistic div canvas {
     height: 300px;
+}
+
+
+
+
+.container-all-session {
+    margin: 10px 20px;
+}
+.under-title-text {
+    font-family: "Nunito";
+    font-weight: 500;
+    font-size: 18px;
+    color: #494B55;
+}
+.block-session {
+    display: flex;
+    padding: 15px 20px;
+    border-radius: 15px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #72A8BA;
+    margin: 12px 0;
+    text-decoration: none;
+}
+.block-session:nth-child(even) {
+    background-color: #385E6C;
+}
+.block-session p {
+    color: #FFFFFF;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.container-one-session {
+    margin: 10px 20px;
+}
+.one-section-content {
+    font-family: "Nunito";
+    font-weight: 500;
+    font-size: 18px;
+    color: #494B55;
+}
+.one-section-content b {
+    display: flex;
+    align-items: center;
+}
+.one-section-content b img {
+    width: 25px;
+    margin: 0 10px 0 0;
+}
+.toast {
+    display: flex;
+    padding: 10px 10px;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    background-color: #72A8BA;
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 600;
 }
