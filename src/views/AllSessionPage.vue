@@ -30,10 +30,19 @@ export default {
   setup() {
     const sessions = ref([]);
     const router = useRouter();
+    const userId = ref('');
+
+
 
     const fetchSessions = async () => {
       try {
-        const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = localStorage.getItem('telegram_user_id');
+        const tg = window.Telegram.WebApp;
+        const initData = tg.initDataUnsafe;
+        const user = initData.user;
+
+        const telegramID = user.id;
+
         const response = await apiService.getClientConsultations(telegramID);
         sessions.value = response.data.data;
       } catch (error) {
@@ -57,7 +66,8 @@ export default {
     return {
       sessions,
       formatDate,
-      goToSession
+      goToSession,
+      userId,
     };
   }
 };
