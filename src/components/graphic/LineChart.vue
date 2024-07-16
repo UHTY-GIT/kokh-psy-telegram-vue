@@ -88,12 +88,12 @@ export default {
 
     const fetchData = async () => {
       try {
-        const telegramID = localStorage.getItem('telegram_user_id'); // Ensure you have the telegram ID set in local storage
-        if (!telegramID) {
-          throw new Error('Telegram ID not found in local storage');
-        }
+        // const telegramID = localStorage.getItem('telegram_user_id'); // Ensure you have the telegram ID set in local storage
+        // if (!telegramID) {
+        //   throw new Error('Telegram ID not found in local storage');
+        // }
 
-        const response = await apiService.getGraphicsClient(telegramID);
+        const response = await apiService.getGraphicsClient(6112401748);
         const data = response.data.data;
         console.log("data" + data);
         const datasetFirst = data.dataset_first.value.map(Number); // Convert values to numbers if needed
