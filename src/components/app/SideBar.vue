@@ -40,7 +40,7 @@ export default {
       {title: 'Головна', url: '/', icon: home},
       {title: 'Всі сесії', url: '/all-session', exact: true, icon: allsession},
       {title: 'Статистика клієнта', url: '/statistic-client', exact: true, icon: statistics},
-      {title: 'Дайджест психотерапевтичних думок сесії', url: '/feedback-session', icon: feedback},
+      {title: 'Дайджест психотерапевтичних думок сесії', url: '/feedback-last-session', icon: feedback},
       {title: 'Інформована згода клієнта', url: '/informed-consent', exact: true, icon: informed},
       {title: 'Оцінка експерта', url: '/expert-assessment', exact: true, icon: expert},
     ],

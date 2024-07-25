@@ -553,6 +553,10 @@ export default {
 }
 </script>
 <style type="scss">
+.single-text,
+.couple-text {
+  margin: 25px 0 100px;
+}
 .title_n_text {
   color: #494B55;
   font-family: Nunito;
@@ -585,7 +589,8 @@ export default {
     }
   }
   ul {
-    margin: 0 0 20px 20px;
+    padding: 0 0 0 20px;
+    margin: 0px 0px 20px;
 
     li {
       list-style-type:disc;

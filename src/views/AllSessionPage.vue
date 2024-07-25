@@ -43,13 +43,7 @@ export default {
     const fetchSessions = async () => {
       try {
         const telegramID = localStorage.getItem('telegram_user_id');
-        errors.value.push('telegramID1 '+ telegramID);
-        // const tg = window.Telegram.WebApp;
-        // const initData = tg.initDataUnsafe;
-        // const user = initData.user;
-        //
-        // const telegramID = user.id;
-        // errors.value.push('telegramID '+ telegramID);
+        // errors.value.push('telegramID1 '+ telegramID);
 
         const response = await apiService.getClientConsultations(telegramID);
         sessions.value = response.data.data;

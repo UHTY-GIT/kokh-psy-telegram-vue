@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://assistant.psy-kokh.online:3000';
+const BASE_URL = 'https://assistant.psy-kokh.online';
 
 const apiService = {
     // Функція для отримання аналітичних даних клієнтів для основної графіки

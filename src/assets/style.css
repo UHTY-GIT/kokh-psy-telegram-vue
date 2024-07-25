@@ -371,3 +371,18 @@ nav ul li.active {
     font-size: 18px;
     font-weight: 600;
 }
+.container-text-statistic {
+    font-family: "Nunito";
+    font-weight: 500;
+    font-size: 18px;
+    color: #494B55;
+    margin: 20px 10px 100px;
+}
+.container-text-statistic ul {
+    list-style: auto;
+    padding: 0 0 0 30px;
+}
+.uniq-text-single-statistic {
+    list-style: none !important;
+    padding: 0 0 0 0px !important;
+}

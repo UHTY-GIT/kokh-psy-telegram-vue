@@ -32,6 +32,18 @@ const routes = [
     component: () => import('../views/OneSessionPage.vue'),
     props: true // Enable props to be passed as route parameters
   },
+  {
+    path: '/feedback-last-session',
+    name: 'FeedBackLastSession',
+    meta: {layout: 'main'},
+    component: () => import('../views/FeedbackLastSessionPage.vue')
+  },
+  {
+    path: '/expert-assessment',
+    name: 'ExpertAssessmet',
+    meta: {layout: 'main'},
+    component: () => import('../views/ExpertAssessmentPage.vue')
+  },
 ]
 
 const router = createRouter({
