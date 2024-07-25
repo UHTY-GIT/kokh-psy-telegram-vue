@@ -325,7 +325,7 @@ nav ul li.active {
 }
 .block-session {
     display: flex;
-    padding: 15px 20px;
+    padding: 12px 20px;
     border-radius: 15px;
     justify-content: space-between;
     align-items: center;
@@ -339,7 +339,7 @@ nav ul li.active {
 .block-session p {
     color: #FFFFFF;
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
 }
 
@@ -374,7 +374,7 @@ nav ul li.active {
 .container-text-statistic {
     font-family: "Nunito";
     font-weight: 500;
-    font-size: 18px;
+    font-size: 16px;
     color: #494B55;
     margin: 20px 10px 100px;
 }
@@ -385,4 +385,10 @@ nav ul li.active {
 .uniq-text-single-statistic {
     list-style: none !important;
     padding: 0 0 0 0px !important;
+}
+
+@media (max-width: 410px) {
+    .block_menu_button nav ul li {
+        margin: 10px 5px;
+    }
 }
