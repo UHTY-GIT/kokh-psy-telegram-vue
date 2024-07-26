@@ -31,6 +31,16 @@ const apiService = {
             }
         };
         return axios.get(`${BASE_URL}/api/v1/customer/consultations/${consultationID}`, config);
+    },
+
+    // Функція для виводу даних користувача
+    getAllInformationClient(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/consultations/client_profile`, config);
     }
 }
 

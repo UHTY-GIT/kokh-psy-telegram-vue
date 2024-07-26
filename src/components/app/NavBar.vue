@@ -1,4 +1,3 @@
-<!--src/components/app/NavBar.vue-->
 <template>
   <div class="background-navbar">
     <div class="container-user-photo">
@@ -6,7 +5,8 @@
         <img :src="fullUserPhotoUrl" alt="user photo">
       </div>
       <span class="container-user-name">
-        {{ userName }} (ID: {{ userId }})
+        {{ firstName }}
+<!--        {{ userName }} (ID: {{ userId }})-->
       </span>
     </div>
     <div class="logotype-psychology">
@@ -22,12 +22,14 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
+import apiService from '@/services/apiService';
 import defaultUserPhoto from '@/assets/icons/emoji.iamrohit.png';
 
 export default {
   name: 'NavBar',
   setup() {
     const userPhoto = ref('');
+    const firstName = ref('');
     const userName = ref('');
     const userId = ref('');
     const errors = ref([]);
@@ -44,9 +46,6 @@ export default {
         return;
       }
 
-      //errors.value.push('запустилося');
-      //errors.value.push(`initDataUnsafe: ${JSON.stringify(tg.initDataUnsafe)}`);
-
       const initData = tg.initDataUnsafe;
 
       if (!initData) {
@@ -60,6 +59,7 @@ export default {
         userId.value = user.id || '';
         loadUserPhoto(user.photo_url);
         saveUserDataToLocalStorage(user.id);
+        fetchUserProfile(user.id); // Fetch user profile data from API
       } else {
         errors.value.push('Не знайдено дані користувача');
       }
@@ -77,12 +77,25 @@ export default {
       localStorage.setItem('telegram_user_id', id);
     };
 
+    const fetchUserProfile = async (telegramID) => {
+      try {
+        const response = await apiService.getAllInformationClient(telegramID);
+        const userProfile = response.data;
+        firstName.value = userProfile.name;
+        localStorage.setItem('origin_type', userProfile.origin_type);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        errors.value.push('Помилка завантаження профілю користувача');
+      }
+    };
+
     onMounted(() => {
       fetchUserData();
     });
 
     return {
       fullUserPhotoUrl,
+      firstName,
       userName,
       userId,
       errors,
