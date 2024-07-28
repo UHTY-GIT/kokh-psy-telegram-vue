@@ -8,7 +8,7 @@
       <hr class="hr_title">
     </div>
     <div class="content-main">
-      <div v-if="typeClient === 'single'" class="single-text">
+      <div v-if="typeClient === 'individual'" class="single-text">
         <p>
           Привіт! 🤗
         </p>
@@ -25,7 +25,7 @@
           Хай цей психологічний курс буде простором для твоїх  думок, важливих сенсів та цінностей.
         </p>
       </div>
-      <div v-else-if="typeClient === 'couple'" class="couple-text">
+      <div v-else-if="typeClient === 'couple_сlassic'" class="couple-text">
         <p>
           Привіт! 🤗
         </p>
@@ -55,12 +55,19 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 
 export default {
   name: "HomePage",
   setup() {
-    const typeClient = ref('single');
+    const typeClient = ref('');
+
+    onMounted(() => {
+      const originType = localStorage.getItem('origin_type');
+      if (originType) {
+        typeClient.value = originType;
+      }
+    });
 
     return {
       typeClient

@@ -80,8 +80,11 @@ export default {
     const fetchUserProfile = async (telegramID) => {
       try {
         const response = await apiService.getAllInformationClient(telegramID);
-        const userProfile = response.data;
+        const userProfile = response.data.data;
         firstName.value = userProfile.name;
+        // errors.value.push('firstName.value' + userProfile.name);
+        // errors.value.push('origin_type' + userProfile.origin_type);
+
         localStorage.setItem('origin_type', userProfile.origin_type);
       } catch (error) {
         console.error('Error fetching user profile:', error);
@@ -91,6 +94,7 @@ export default {
 
     onMounted(() => {
       fetchUserData();
+      fetchUserProfile(userId.value);
     });
 
     return {

@@ -18,25 +18,7 @@ export default {
   setup() {
     const chartData = ref({
       labels: [],
-      datasets: [
-        {
-          label: '',
-          family: "Nunito",
-          data: [],
-          fill: true,
-          backgroundColor: 'rgba(75,192,192,0.4)',
-          borderColor: 'rgba(75,192,192,1)',
-          tension: 0.4,
-        },
-        {
-          label: '',
-          data: [],
-          fill: true,
-          backgroundColor: 'rgba(255,135,128,0.4)',
-          borderColor: 'rgba(255,135,128,1)',
-          tension: 0.4
-        }
-      ]
+      datasets: []
     });
 
     const chartOptions = {
@@ -46,18 +28,11 @@ export default {
           position: 'top',
           labels: {
             font: {
-              family: 'Nunito', // Change font family for legend labels
+              family: 'Nunito',
               size: 14
             }
           }
         },
-        // title: {
-        //   display: true,
-        //   text: 'Monthly Data',
-        //   font: {
-        //     size: 20
-        //   }
-        // },
       },
       scales: {
         x: {
@@ -80,31 +55,58 @@ export default {
               size: 16,
               family: "Nunito"
             }
+          },
+          ticks: {
+            stepSize: 1,
+            callback: function(value) {
+              if (Number.isInteger(value)) {
+                return value;
+              }
+            }
           }
         }
       }
     };
 
-
     const fetchData = async () => {
       try {
-        const telegramID = localStorage.getItem('telegram_user_id'); // Ensure you have the telegram ID set in local storage
+        const telegramID = localStorage.getItem('telegram_user_id');
+        const originType = localStorage.getItem('origin_type'); // Get origin_type from local storage
+        //const originType = 'couple_classic'; // Get origin_type from local storage
         if (!telegramID) {
           throw new Error('Telegram ID not found in local storage');
         }
 
         const response = await apiService.getGraphicsClient(telegramID);
         const data = response.data.data;
-        console.log("data" + data);
-        const datasetFirst = data.dataset_first.value.map(Number); // Convert values to numbers if needed
-        const datasetSecond = data.dataset_second.value.map(Number); // Convert values to numbers if needed
 
-        chartData.value.labels = datasetFirst.map((_, index) => index + 1); // Creating labels based on the number of elements
-        chartData.value.datasets[0].label = data.dataset_first.title_of_graphic;
-        chartData.value.datasets[0].data = datasetFirst;
-
-        chartData.value.datasets[1].label = data.dataset_second.title_of_graphic;
-        chartData.value.datasets[1].data = datasetSecond;
+        if (originType === 'individual') {
+          const datasetSecond = data.dataset_second.value.map(Number);
+          chartData.value.labels = datasetSecond.map((_, index) => index + 1);
+          chartData.value.datasets = [
+            {
+              label: data.dataset_second.title_of_graphic,
+              data: datasetSecond,
+              fill: true,
+              backgroundColor: 'rgba(255,135,128,0.4)',
+              borderColor: 'rgba(255,135,128,1)',
+              tension: 0.4
+            }
+          ];
+        } else if (originType === 'couple_classic') {
+          const datasetFirst = data.dataset_first.value.map(Number);
+          chartData.value.labels = datasetFirst.map((_, index) => index + 1);
+          chartData.value.datasets = [
+            {
+              label: data.dataset_first.title_of_graphic,
+              data: datasetFirst,
+              fill: true,
+              backgroundColor: 'rgba(75,192,192,0.4)',
+              borderColor: 'rgba(75,192,192,1)',
+              tension: 0.4
+            }
+          ];
+        }
       } catch (error) {
         console.error('Error fetching graphics data:', error);
       }

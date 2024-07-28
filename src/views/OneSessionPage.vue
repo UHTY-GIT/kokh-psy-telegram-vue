@@ -39,7 +39,7 @@ export default {
   setup() {
     const route = useRoute();
     const consultation = ref({});
-    const typeClient = ref('single');
+    const typeClient = ref('');
 
     const fetchConsultation = async () => {
       try {
@@ -48,8 +48,9 @@ export default {
         const response = await apiService.getOneClientConsultation(telegramID, consultationID);
         consultation.value = response.data.data;
 
-        // Determine the client type (single/couple)
-        typeClient.value = consultation.value.origin_type === 'couple' ? 'couple' : 'single';
+        // Retrieve the client type from localStorage
+        const originType = localStorage.getItem('origin_type');
+        typeClient.value = originType;
       } catch (error) {
         console.error('Error fetching consultation:', error);
         M.toast({ html: 'Помилка завантаження консультації' });
@@ -62,14 +63,14 @@ export default {
 
     const getTitleForField = (fieldName) => {
       if (fieldName === 'Основні думки сесії') {
-        return typeClient.value === 'single' ? 'Думки сесії' : 'Діалоги близькості';
+        return typeClient.value === 'individual' ? 'Думки сесії' : 'Діалоги близькості';
       }
       return fieldName;
     };
 
     const getIconForField = (fieldName) => {
       const icons = {
-        'Основні думки сесії': typeClient.value === 'single' ? aiTechnologyIcon : heartCoupleIcon,
+        'Основні думки сесії': typeClient.value === 'individual' ? aiTechnologyIcon : heartCoupleIcon,
         'Запитання до самоаналізу': aboutIcon,
         'Висновки консультації': receiptIcon,
         'Домашнє завдання': documentSessionIcon,
@@ -90,4 +91,3 @@ export default {
   }
 };
 </script>
-

@@ -7,7 +7,9 @@
       <hr class="hr_title">
     </div>
     <div>
-
+      <p>
+        Зовсім скоро (☞ﾟヮﾟ)☞☜(ﾟヮﾟ☜)
+      </p>
     </div>
   </div>
 </template>

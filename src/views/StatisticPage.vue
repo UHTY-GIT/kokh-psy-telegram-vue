@@ -11,7 +11,7 @@
       <LineChartComponent />
     </div>
     <div class="container-text-statistic">
-      <div v-if="typeClient === 'single'">
+      <div v-if="typeClient === 'individual'">
         <div class="text-statistic">
           <ul class="uniq-text-single-statistic">
             <li>
@@ -43,7 +43,7 @@
           </p>
         </div>
       </div>
-      <div v-else-if="typeClient === 'couple'">
+      <div v-else-if="typeClient === 'couple_сlassic'">
         <div class="text-statistic">
           <ul>
             <li>
@@ -90,7 +90,7 @@
 
 <script>
 import LineChartComponent from '@/components/graphic/LineChart.vue';
-import {ref} from "vue";
+import { ref, onMounted } from "vue";
 
 export default {
   name: 'StatisticPage',
@@ -98,12 +98,19 @@ export default {
     LineChartComponent
   },
   setup() {
-    const typeClient = ref('single');
+    const typeClient = ref('');
 
+    onMounted(() => {
+      const originType = localStorage.getItem('origin_type');
+      if (originType) {
+        typeClient.value = originType;
+      }
+    });
 
     return {
       typeClient
-    }
+    };
   }
 };
 </script>
+

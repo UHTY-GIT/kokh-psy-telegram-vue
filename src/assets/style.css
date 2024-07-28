@@ -352,6 +352,12 @@ nav ul li.active {
     font-size: 18px;
     color: #494B55;
 }
+.one-section-content p {
+    word-wrap: break-word; /* Break long words if necessary */
+    word-break: break-word; /* Break long words if necessary */
+    overflow-wrap: break-word; /* Break long words if necessary */
+    white-space: pre-wrap; /* Preserve whitespace and wrap as needed */
+}
 .one-section-content b {
     display: flex;
     align-items: center;
