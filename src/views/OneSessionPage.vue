@@ -33,6 +33,7 @@ import aboutIcon from '@/assets/icons/about.png';
 import receiptIcon from '@/assets/icons/receipt.png';
 import documentSessionIcon from '@/assets/icons/document-session.png';
 import hyperlinkIcon from '@/assets/icons/hyperlink.png';
+import queryTherapyIcon from '@/assets/icons/lotus.png';
 
 export default {
   name: 'OneSessionPage',
@@ -58,7 +59,7 @@ export default {
     };
 
     const filteredConsultData = computed(() => {
-      return consultation.value.main_consult_data_for_client?.filter(item => item.text_answer) || [];
+      return consultation.value.main_consult_data?.filter(item => item.text_answer) || [];
     });
 
     const getTitleForField = (fieldName) => {
@@ -74,7 +75,8 @@ export default {
         'Запитання до самоаналізу': aboutIcon,
         'Висновки консультації': receiptIcon,
         'Домашнє завдання': documentSessionIcon,
-        'Матеріали для саморозвитку': hyperlinkIcon
+        'Матеріали для саморозвитку': hyperlinkIcon,
+        'Запит на терапію': queryTherapyIcon,
       };
       return icons[fieldName];
     };
