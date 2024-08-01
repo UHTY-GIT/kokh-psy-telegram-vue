@@ -72,7 +72,8 @@ export default {
       try {
         const telegramID = localStorage.getItem('telegram_user_id');
         const originType = localStorage.getItem('origin_type'); // Get origin_type from local storage
-        //const originType = 'couple_classic'; // Get origin_type from local storage
+        //const originType = 'couple_classic';
+
         if (!telegramID) {
           throw new Error('Telegram ID not found in local storage');
         }
@@ -94,12 +95,12 @@ export default {
             }
           ];
         } else if (originType === 'couple_classic') {
-          const datasetFirst = data.dataset_first.value.map(Number);
-          chartData.value.labels = datasetFirst.map((_, index) => index + 1);
+          const datasetThird = data.dataset_third.value.map(Number);
+          chartData.value.labels = datasetThird.map((_, index) => index + 1);
           chartData.value.datasets = [
             {
-              label: data.dataset_first.title_of_graphic,
-              data: datasetFirst,
+              label: data.dataset_third.title_of_graphic,
+              data: datasetThird,
               fill: true,
               backgroundColor: 'rgba(75,192,192,0.4)',
               borderColor: 'rgba(75,192,192,1)',
