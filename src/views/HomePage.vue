@@ -25,7 +25,7 @@
           Хай цей психологічний курс буде простором для твоїх  думок, важливих сенсів та цінностей.
         </p>
       </div>
-      <div v-else-if="typeClient === 'couple_сlassic'" class="couple-text">
+      <div v-else-if="typeClient === 'couple_classic'" class="couple-text">
         <p>
           Привіт! 🤗
         </p>

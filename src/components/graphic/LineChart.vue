@@ -70,9 +70,10 @@ export default {
 
     const fetchData = async () => {
       try {
+        //const originType = 'individual';
+        //const telegramID = 6112401748;
         const telegramID = localStorage.getItem('telegram_user_id');
         const originType = localStorage.getItem('origin_type'); // Get origin_type from local storage
-        //const originType = 'couple_classic';
 
         if (!telegramID) {
           throw new Error('Telegram ID not found in local storage');

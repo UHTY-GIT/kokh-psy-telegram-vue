@@ -43,7 +43,7 @@
           </p>
         </div>
       </div>
-      <div v-else-if="typeClient === 'couple_сlassic'">
+      <div v-else-if="typeClient === 'couple_classic'">
         <div class="text-statistic">
           <ul>
             <li>
@@ -101,7 +101,9 @@ export default {
     const typeClient = ref('');
 
     onMounted(() => {
-      const originType = localStorage.getItem('origin_type');
+      const originType = 'couple_classic';
+      //const telegramID = 6112401748;
+      //const originType = localStorage.getItem('origin_type');
       if (originType) {
         typeClient.value = originType;
       }

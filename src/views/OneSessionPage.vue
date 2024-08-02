@@ -44,6 +44,10 @@ export default {
 
     const fetchConsultation = async () => {
       try {
+
+        // const originType = 'couple_classic';
+        // const telegramID = 6112401748;
+
         const telegramID = localStorage.getItem('telegram_user_id');
         const consultationID = route.params.sessionId;
         const response = await apiService.getOneClientConsultation(telegramID, consultationID);
