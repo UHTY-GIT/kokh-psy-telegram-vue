@@ -229,7 +229,7 @@
           </div>
       </div>
 
-      <div v-else-if="typeClient === 'couple_classic'" class="couple-text">
+      <div v-else-if="typeClient === 'couple_сlassic'" class="couple-text">
         <div class="content_user_form">
           <span>Інформація про психолога</span>
           <p>
