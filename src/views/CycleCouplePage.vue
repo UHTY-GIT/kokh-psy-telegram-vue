@@ -17,23 +17,29 @@
         <div class="client-body">
           <table class="client-table">
             <tbody>
-              <tr class="cients-line">
-                <td class="client-ones"><span>Клієнт 1</span><img src="@/assets/photo/client-img.png" alt="clientphoto"></td>
-                <td class="client-ones border-dashed-left"><span>Клієнт 2</span><img src="@/assets/photo/client-img-1.png" alt="clientphoto"></td>
+            <tr class="cients-line">
+              <td class="client-ones">
+                <span>{{ mainClientName }}</span>
+                <img src="@/assets/photo/client-img.png" alt="clientphoto">
+              </td>
+              <td class="client-ones border-dashed-left">
+                <span>{{ partnerClientName }}</span>
+                <img src="@/assets/photo/client-img-1.png" alt="clientphoto">
+              </td>
+            </tr>
+            <!-- Iterate over the questions and answers -->
+            <template v-for="(question, index) in mainClientAnswers" :key="'question-answer-group-' + index">
+              <tr class="border-dashed">
+                <td class="field-title padding-right">{{ question.form_item_field_name }}</td>
+                <td class="field-title border-dashed-left padding-left">
+                  {{ partnerClientAnswers[index]?.form_item_field_name || question.form_item_field_name }}
+                </td>
               </tr>
-              <!-- Iterate over the questions and answers -->
-              <template v-for="(question, index) in mainClientAnswers" :key="'question-answer-group-' + index">
-                <tr class="border-dashed">
-                  <td class="field-title padding-right">{{ question.form_item_field_name }}</td>
-                  <td class="field-title border-dashed-left padding-left">
-                    {{ partnerClientAnswers[index]?.form_item_field_name || question.form_item_field_name }}
-                  </td>
-                </tr>
-                <tr class="padding-bottom">
-                  <td class="field-content padding-right">{{ question.text_answer }}</td>
-                  <td class="field-content border-dashed-left padding-left">{{ partnerClientAnswers[index]?.text_answer }}</td>
-                </tr>
-              </template>
+              <tr class="padding-bottom">
+                <td class="field-content padding-right">{{ question.text_answer }}</td>
+                <td class="field-content border-dashed-left padding-left">{{ partnerClientAnswers[index]?.text_answer }}</td>
+              </tr>
+            </template>
             </tbody>
           </table>
         </div>
@@ -50,7 +56,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import apiService from "@/services/apiService";
-//import M from "materialize-css";
+import M from "materialize-css";
 
 export default {
   name: "CycleCouple",
@@ -58,25 +64,32 @@ export default {
     const errors = ref([]);
     const mainClientAnswers = ref([]);
     const partnerClientAnswers = ref([]);
+    const mainClientName = ref("");
+    const partnerClientName = ref("");
 
     const fetchCycleCouple = async () => {
-      const telegramID = localStorage.getItem('telegram_user_id');
-      //const telegramID = 6112401748;
+      //const telegramID = localStorage.getItem('telegram_user_id');
+      const telegramID = 6112401748;
       try {
         const response = await apiService.getCycleCouple(telegramID);
         const data = response.data.data;
 
         if (data.main_client_couple_cycle) {
           mainClientAnswers.value = data.main_client_couple_cycle.answers;
+          mainClientName.value = data.main_client_name; // Set main client name
         }
 
         if (data.partner_client_couple_cycle) {
           partnerClientAnswers.value = data.partner_client_couple_cycle.answers;
+          partnerClientName.value = data.partner_name; // Set partner client name
         }
       } catch (error) {
-        //M.toast({ html: 'Помилка завантаження циклу пари' });
-        console.error("Error fetching cycle couple data:", error);
-        //errors.value.push("Помилка при завантаженні даних циклу пари");
+        if (error.response && error.response.status === 502) {
+          M.toast({ html: 'Помилка завантаження циклу пари' });
+        } else {
+          console.error("Error fetching cycle couple data:", error);
+          //errors.value.push("Помилка при завантаженні даних циклу пари");
+        }
       }
     };
 
@@ -86,6 +99,8 @@ export default {
       errors,
       mainClientAnswers,
       partnerClientAnswers,
+      mainClientName,
+      partnerClientName,
     };
   },
 };
