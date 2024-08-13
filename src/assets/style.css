@@ -315,7 +315,7 @@ nav ul li.active {
 
 
 .container-all-session {
-    margin: 10px 20px;
+    margin: 10px 20px 110px;
 }
 .under-title-text {
     font-family: "Nunito";
@@ -344,7 +344,7 @@ nav ul li.active {
 }
 
 .container-one-session {
-    margin: 10px 20px;
+    margin: 10px 20px 110px;
 }
 .one-section-content {
     font-family: "Nunito";
@@ -396,5 +396,103 @@ nav ul li.active {
 @media (max-width: 410px) {
     .block_menu_button nav ul li {
         margin: 10px 5px;
+    }
+}
+
+.client-table {
+    border-collapse: collapse;
+    margin: 5px 10px 10px;
+}
+.border-dashed {
+    border: 2px dashed #72A8BA;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+.border-dashed-left {
+    border: 2px dashed #72A8BA;
+    border-bottom: none;
+    /* border-left: none; */
+    border-right: none;
+    border-top: none;
+}
+.field-title {
+    padding: 20px 0 10px 0;
+    text-align: center;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 17px;
+    color: #494B55;
+}
+.padding-right {
+    padding-right: 10px;
+}
+.padding-left {
+    padding-left: 10px;
+}
+.field-content {
+    padding-bottom: 10px;
+}
+.field-content {
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    color: #494B55;
+    margin: 0px 20px 10px;
+}
+.client-ones {
+    padding: 0 3px 15px 3px;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 19px;
+    color: #fff;
+    line-height: 10px;
+    text-align: center;
+}
+.client-ones img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.client-ones span {
+    position: relative;
+    top: 45px;
+}
+.client-header {
+    display: flex;
+    justify-content: center;
+    margin: 20px 10px 0px;
+}
+.client-header img {
+    width: 80%;
+}
+.container-cycle-couple {
+    margin: 0 0 100px 0;
+}
+.no-cycle-message {
+
+    p {
+        padding: 0 20px;
+        text-align: justify;
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 18px;
+        color: #494B55;
+    }
+}
+.soon-page {
+    p {
+        padding: 0 20px;
+        text-align: justify;
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 18px;
+        color: #494B55;
     }
 }

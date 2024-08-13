@@ -43,6 +43,8 @@ export default {
     const fetchSessions = async () => {
       try {
         const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = 6112401748;
+        //const telegramID = 200208719;
         // errors.value.push('telegramID1 '+ telegramID);
 
         const response = await apiService.getClientConsultations(telegramID);

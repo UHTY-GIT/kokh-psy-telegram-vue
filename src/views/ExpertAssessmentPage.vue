@@ -6,7 +6,7 @@
       </p>
       <hr class="hr_title">
     </div>
-    <div>
+    <div class="soon-page">
       <p>
         Зовсім скоро (☞ﾟヮﾟ)☞☜(ﾟヮﾟ☜)
       </p>

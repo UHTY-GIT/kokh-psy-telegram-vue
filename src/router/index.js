@@ -44,6 +44,12 @@ const routes = [
     meta: {layout: 'main'},
     component: () => import('../views/ExpertAssessmentPage.vue')
   },
+  {
+    path: '/cycle-couple',
+    name: 'CycleCouple',
+    meta: {layout: 'main'},
+    component: () => import('../views/CycleCouplePage.vue')
+  },
 ]
 
 const router = createRouter({

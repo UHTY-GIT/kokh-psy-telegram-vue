@@ -41,7 +41,17 @@ const apiService = {
             }
         };
         return axios.get(`${BASE_URL}/api/v1/customer/consultations/client_profile`, config);
-    }
+    },
+
+    // Функція для отримання циклу пари
+    getCycleCouple(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/customers/couple_cycle`, config);
+    },
 }
 
 export default apiService;
