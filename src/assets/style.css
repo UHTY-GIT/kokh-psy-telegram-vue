@@ -402,6 +402,14 @@ nav ul li.active {
 .client-table {
     border-collapse: collapse;
     margin: 5px 10px 10px;
+    width: 95%;
+    table-layout: fixed; /* Ensures each column gets an equal width */
+}
+
+.client-table td {
+    word-wrap: break-word; /* Ensures long words or text wrap within the cell */
+    max-width: 50%; /* Ensure no column exceeds 50% width */
+    width: 50%;
 }
 .border-dashed {
     border: 2px dashed #72A8BA;
