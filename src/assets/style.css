@@ -403,12 +403,12 @@ nav ul li.active {
     border-collapse: collapse;
     margin: 5px 10px 10px;
     width: 95%;
-    table-layout: fixed; /* Ensures each column gets an equal width */
+    table-layout: fixed;
 }
 
 .client-table td {
-    word-wrap: break-word; /* Ensures long words or text wrap within the cell */
-    max-width: 50%; /* Ensure no column exceeds 50% width */
+    word-wrap: break-word;
+    max-width: 50%;
     width: 50%;
 }
 .border-dashed {
