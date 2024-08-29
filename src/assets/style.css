@@ -493,14 +493,41 @@ nav ul li.active {
         color: #494B55;
     }
 }
-.soon-page {
-    p {
-        padding: 0 20px;
-        text-align: justify;
-        font-family: "Nunito";
-        font-style: normal;
-        font-weight: 500;
-        font-size: 18px;
-        color: #494B55;
+
+.container-view-client-info {
+    border-bottom: 2px dashed #72A8BA;
+    font-family: "Nunito", sans-serif;
+
+    .date-calendar-block {
+
+        p {
+            color: #494B55;
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 20px;
+                margin: 0 10px 0 0;
+            }
+        }
     }
+
+    .content-view {
+
+        p {
+            color: #494B55;
+            font-size: 18px;
+            font-weight: 500;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+    }
+}
+
+.expert-assessment {
+    margin: 20px 0 100px;
 }

@@ -58,8 +58,8 @@ export default {
     }
   },
   created() {
-    const originType = 'couple_сlassic';
-    //const originType = localStorage.getItem('origin_type');
+    //const originType = 'couple_сlassic';
+    const originType = localStorage.getItem('origin_type');
 
     if (originType) {
       this.typeClient = originType;

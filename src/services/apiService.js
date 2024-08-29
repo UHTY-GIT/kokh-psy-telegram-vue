@@ -52,6 +52,26 @@ const apiService = {
         };
         return axios.get(`${BASE_URL}/api/v1/customer/customers/couple_cycle`, config);
     },
+
+    // Функція для отримання оцінки експерта
+    getExpertAssessment(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/customers/expert_assessments`, config);
+    },
+
+    // Функція для отримання дайджесту психотерапевтичних думок сесії
+    getDigestPsyMind(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/customers/digest_opinions`, config);
+    },
 }
 
 export default apiService;
