@@ -17,7 +17,7 @@
           <div v-for="digest in digests" :key="digest.id" class="container-view-client-info">
             <div class="date-calendar-block">
               <p>
-                <img src="@/assets/icons/calendar.svg" alt="date"> {{ formatDate(digest.created_at) }}
+                <img src="@/assets/icons/calendar.png" alt="date"> {{ formatDate(digest.created_at) }}
               </p>
             </div>
             <div class="content-view">
