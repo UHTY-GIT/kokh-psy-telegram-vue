@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="block_menu_button">
+  <div class="side-bar">
+    <div class="block_menu_button glass-card">
       <nav>
         <ul class="menu ul">
           <router-link

@@ -7,7 +7,22 @@
       <hr class="hr_title">
     </div>
     <div class="content-main">
-      <div class="expert-assessment">
+      <!-- LOADING -->
+      <div v-if="loading" class="state state--loading">
+        <div class="spinner" aria-label="Loading"></div>
+        <p class="state__text">Завантажуємо оцінку...</p>
+      </div>
+
+      <!-- NO ACCESS (no origin_type) -->
+      <div v-else-if="!typeClient" class="expert-assessment">
+        <p> Привіт! 🤗 </p>
+        <p>
+          Будь ласка, запишіться на свою першу сесію, щоб отримати доступ до оцінки експерта.
+        </p>
+      </div>
+
+      <!-- CONTENT -->
+      <div v-else class="expert-assessment">
         <div v-if="assessments.length === 0">
           <p>
             Оцінка експерта ще не додана психологом, зачекайте 🤍
@@ -41,13 +56,18 @@ export default {
   name: 'ExpertAssessment',
   setup() {
     //const telegramID = 6112401748;
+
+
     const telegramID = localStorage.getItem('telegram_user_id');
     const assessments = ref([]);
+
+    const typeClient = ref('');
+    const loading = ref(true);
 
     const fetchExpertAssessments = async () => {
       try {
         const response = await apiService.getExpertAssessment(telegramID);
-        assessments.value = response.data.data;
+        assessments.value = response?.data?.data ?? [];
       } catch (error) {
         console.error('Error fetching expert assessments:', error);
         //M.toast({ html: 'Помилка при завантаженні даних оцінки експерта' });
@@ -60,11 +80,25 @@ export default {
       return date.toLocaleDateString("uk-UA", options);
     };
 
-    onMounted(fetchExpertAssessments);
+    //onMounted(fetchExpertAssessments);
+
+    onMounted(async () => {
+      const originType = localStorage.getItem('origin_type');
+
+      // якщо origin_type нема — НЕ робимо запит
+      if (originType) {
+        typeClient.value = originType;
+        await fetchExpertAssessments();
+      }
+
+      loading.value = false;
+    });
 
     return {
       assessments,
       formatDate,
+      typeClient,
+      loading,
     };
   }
 }

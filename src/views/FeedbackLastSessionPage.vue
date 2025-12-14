@@ -7,7 +7,20 @@
       <hr class="hr_title">
     </div>
     <div class="content-main">
-      <div class="expert-assessment">
+      <!-- LOADING -->
+      <div v-if="loading" class="state state--loading">
+        <div class="spinner" aria-label="Loading"></div>
+      </div>
+
+      <!-- NO ACCESS -->
+      <div v-else-if="!typeClient" class="expert-assessment">
+        <p> Привіт! 🤗 </p>
+        <p>
+          Будь ласка, запишіться на свою першу сесію, щоб отримати доступ до дайджесту.
+        </p>
+      </div>
+
+      <div v-else class="expert-assessment">
         <div v-if="digests.length === 0">
           <p>
             Дайджест сесій ще не додано психологом, зачекайте 🤍
@@ -41,8 +54,12 @@ export default {
   name: 'FeedbackSession',
   setup() {
     //const telegramID = 6112401748;
+    //const originType = 'couple_classic';
+
     const telegramID = localStorage.getItem('telegram_user_id');
     const digests = ref([]);
+    const typeClient = ref('');
+    const loading = ref(true);
 
     const fetchDigestPsyMind = async () => {
       try {
@@ -60,11 +77,25 @@ export default {
       return date.toLocaleDateString("uk-UA", options);
     };
 
-    onMounted(fetchDigestPsyMind);
+    // onMounted(fetchDigestPsyMind);
+    onMounted(async () => {
+      const originType = localStorage.getItem('origin_type');
+
+      // якщо origin_type нема — НЕ робимо запит
+      if (originType) {
+        typeClient.value = originType;
+        await fetchDigestPsyMind();
+      }
+
+      loading.value = false;
+    });
+
 
     return {
       digests,
       formatDate,
+      typeClient,
+      loading,
     };
   }
 }

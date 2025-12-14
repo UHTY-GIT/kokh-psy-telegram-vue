@@ -11,6 +11,18 @@
       <p class="under-title-text">
         Тут ви можете переглянути свої сесії, та інформацію про них 🤍
       </p>
+
+      <!-- 1) LOADING -->
+      <div v-if="loading" class="state state--loading">
+        <div class="spinner" aria-label="Loading"></div>
+        <p class="state__text">Завантажуємо сесії...</p>
+      </div>
+
+      <!-- 2) EMPTY -->
+      <div v-else-if="sessions.length === 0" class="state state--empty">
+        <p class="state__text">Поки що немає жодної сесії.</p>
+      </div>
+
       <div v-for="session in sessions" :key="session.id" class="block-session" @click="goToSession(session.id)">
         <p>Сесія №{{ session.number }}</p>
         <p>{{ formatDate(session.consultation_date) }}</p>
@@ -38,20 +50,25 @@ export default {
     const userId = ref('');
     const errors = ref([]);
 
-
+    const loading = ref(false);
 
     const fetchSessions = async () => {
+      loading.value = true;
+
       try {
-        const telegramID = localStorage.getItem('telegram_user_id');
+
         //const telegramID = 6112401748;
         //const telegramID = 200208719;
         // errors.value.push('telegramID1 '+ telegramID);
 
+        const telegramID = localStorage.getItem('telegram_user_id');
         const response = await apiService.getClientConsultations(telegramID);
         sessions.value = response.data.data;
       } catch (error) {
         console.error('Error fetching sessions:', error);
         M.toast({ html: 'Помилка завантаження сесій' });
+      } finally {
+        loading.value = false;
       }
     };
 
@@ -72,7 +89,9 @@ export default {
       formatDate,
       goToSession,
       userId,
-      errors
+      errors,
+      loading,
+      fetchSessions,
     };
   }
 };

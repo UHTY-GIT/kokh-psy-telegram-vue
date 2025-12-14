@@ -548,6 +548,7 @@ export default {
 
     onMounted(() => {
       const originType = localStorage.getItem('origin_type');
+      //const originType = 'couple_сlassic'; //couple_сlassic individual
       if (originType) {
         typeClient.value = originType;
       }

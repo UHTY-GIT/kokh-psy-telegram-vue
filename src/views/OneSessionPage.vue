@@ -1,6 +1,12 @@
 <!-- src/views/OneSessionPage.vue -->
 <template>
-  <div>
+  <!-- LOADING -->
+  <div v-if="loading" class="state state--loading">
+    <div class="spinner" aria-label="Loading"></div>
+    <p class="state__text">Завантажуємо сесію ...</p>
+  </div>
+
+  <div v-else>
     <div class="container-tittle">
       <p>
         Сесія №{{ consultation.number }}
@@ -42,11 +48,15 @@ export default {
     const consultation = ref({});
     const typeClient = ref('');
 
+    const loading = ref(false);
+
     const fetchConsultation = async () => {
+      loading.value = true;
+
       try {
 
-        // const originType = 'couple_classic';
-        // const telegramID = 6112401748;
+        // const originType = 'couple_classic'; //individual couple_classic
+        //const telegramID = 6112401748;
 
         const telegramID = localStorage.getItem('telegram_user_id');
         const consultationID = route.params.sessionId;
@@ -59,6 +69,8 @@ export default {
       } catch (error) {
         console.error('Error fetching consultation:', error);
         M.toast({ html: 'Помилка завантаження консультації' });
+      } finally {
+        loading.value = false;
       }
     };
 
@@ -90,6 +102,7 @@ export default {
     return {
       consultation,
       typeClient,
+      loading,
       filteredConsultData,
       getTitleForField,
       getIconForField
