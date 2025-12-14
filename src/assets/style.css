@@ -146,7 +146,7 @@ html, body {
 
 .background-navbar {
     background-color: #72A8BA;
-    padding: 50px 10px 20px;
+    padding: 100px 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
