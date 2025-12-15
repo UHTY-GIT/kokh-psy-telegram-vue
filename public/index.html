@@ -19,6 +19,11 @@
 
               // Optional: better UX in mini apps
               // tg.disableVerticalSwipes();
+
+              // новий механізм (реальний fullscreen), якщо підтримується
+              if (typeof tg.requestFullscreen === "function") {
+                  tg.requestFullscreen();
+              }
           })();
       </script>
   </head>
