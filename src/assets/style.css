@@ -628,3 +628,35 @@ nav ul li.active {
     font: 500 18px/1.2 "Nunito", system-ui, sans-serif;
     color: #494B55;
 }
+
+.content_user_form table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.content_user_form th,
+.content_user_form td {
+    padding: 12px 10px;
+    border: 2px solid rgb(73 75 85); /* товщина/колір ліній */
+}
+
+/* прибрати зовнішню рамку */
+.content_user_form tr:first-child th,
+.content_user_form tr:first-child td {
+    border-top: 0;
+}
+
+.content_user_form tr:last-child th,
+.content_user_form tr:last-child td {
+    border-bottom: 0;
+}
+
+.content_user_form th:first-child,
+.content_user_form td:first-child {
+    border-left: 0;
+}
+
+.content_user_form th:last-child,
+.content_user_form td:last-child {
+    border-right: 0;
+}
