@@ -1,5 +1,5 @@
 <template>
-  <div class="background-navbar">
+  <div :class="['background-navbar', { 'background-navbar--desktop': isDesktop }]">
     <div class="container-user-photo">
       <div class="user-photo">
         <img :src="fullUserPhotoUrl" alt="user photo">
@@ -24,6 +24,7 @@
 import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
 import defaultUserPhoto from '@/assets/icons/emoji.iamrohit.png';
+import { useTelegramPlatform } from '@/composables/useTelegramPlatform';
 
 export default {
   name: 'NavBar',
@@ -34,12 +35,14 @@ export default {
     const userId = ref('');
     const errors = ref([]);
 
+    const { isDesktop } = useTelegramPlatform();
+
     const fullUserPhotoUrl = computed(() => {
       return userPhoto.value || defaultUserPhoto;
     });
 
     const fetchUserData = () => {
-      const tg = window.Telegram.WebApp;
+      const tg = window.Telegram?.WebApp;
 
       if (!tg) {
         errors.value.push('Telegram WebApp недоступний');
@@ -103,6 +106,7 @@ export default {
       userName,
       userId,
       errors,
+      isDesktop
     };
   }
 }

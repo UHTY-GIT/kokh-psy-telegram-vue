@@ -151,7 +151,9 @@ html, body {
     justify-content: space-between;
     align-items: center;
 }
-
+.background-navbar.background-navbar--desktop {
+    padding: 20px 10px 20px;
+}
 .site-content {
     flex: 1;
     overflow-y: auto;
