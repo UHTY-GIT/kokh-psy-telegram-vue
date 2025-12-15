@@ -1,5 +1,6 @@
 <template>
   <div :class="['background-navbar', { 'background-navbar--desktop': isDesktop }]">
+    <div>{{ platform }}</div>
     <div class="container-user-photo">
       <div class="user-photo">
         <img :src="fullUserPhotoUrl" alt="user photo">
@@ -35,7 +36,7 @@ export default {
     const userId = ref('');
     const errors = ref([]);
 
-    const { isDesktop } = useTelegramPlatform();
+    const { isDesktop, platform } = useTelegramPlatform();
 
     const fullUserPhotoUrl = computed(() => {
       return userPhoto.value || defaultUserPhoto;
@@ -106,7 +107,8 @@ export default {
       userName,
       userId,
       errors,
-      isDesktop
+      isDesktop,
+      platform
     };
   }
 }
