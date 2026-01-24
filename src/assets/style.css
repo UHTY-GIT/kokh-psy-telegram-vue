@@ -146,7 +146,12 @@ html, body {
 
 .background-navbar {
     background-color: #72A8BA;
-    padding: 100px 10px 20px;
+    /*padding: 100px 10px 20px;*/
+    /* Telegram Mini App safe area + desired interactive spacing */
+    padding-top: calc(var(--tg-content-safe-area-inset-top, 0px) + 50px);
+    padding-right: 10px;
+    padding-bottom: 20px;
+    padding-left: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -632,12 +637,16 @@ nav ul li.active {
 .content_user_form table {
     border-collapse: collapse;
     width: 100%;
+    table-layout: fixed;
 }
 
 .content_user_form th,
 .content_user_form td {
     padding: 12px 10px;
-    border: 2px solid rgb(73 75 85); /* товщина/колір ліній */
+    border: 2px solid rgb(73 75 85);
+    vertical-align: top;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* прибрати зовнішню рамку */

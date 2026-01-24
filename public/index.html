@@ -20,6 +20,11 @@
               // Optional: better UX in mini apps
               // tg.disableVerticalSwipes();
 
+              // Забороняє свайп-згортання міні-апки під час скролу
+              if (typeof tg.disableVerticalSwipes === "function") {
+                  tg.disableVerticalSwipes();
+              }
+
               // новий механізм (реальний fullscreen), якщо підтримується
               if (typeof tg.requestFullscreen === "function") {
                   tg.requestFullscreen();
