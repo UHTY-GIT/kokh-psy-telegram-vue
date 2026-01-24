@@ -95,7 +95,7 @@ export default {
               tension: 0.4
             }
           ];
-        } else if (originType === 'couple_сlassic') {
+        } else if (originType === 'couple_classic') {
           const datasetThird = data.dataset_third.value.map(Number);
           chartData.value.labels = datasetThird.map((_, index) => index + 1);
           chartData.value.datasets = [

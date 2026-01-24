@@ -72,6 +72,86 @@ const apiService = {
         };
         return axios.get(`${BASE_URL}/api/v1/customer/customers/digest_opinions`, config);
     },
+
+    // Функція для отримання EFCT протоколу
+    getEfctProtocol(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/efct/protocol`, config);
+    },
+
+    // Функція для отримання EFCT навичок (Radar Chart)
+    getEfctSkills(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/efct/skills`, config);
+    },
+
+    // Функція для отримання опису кейсу
+    getCaseDescription(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/case_description`, config);
+    },
+
+    // Отримання списку посилань
+    getClientAssets(telegramID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.get(`${BASE_URL}/api/v1/customer/client_assets`, config);
+    },
+
+    // Створення нового посилання
+    createClientAsset(telegramID, data) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.post(`${BASE_URL}/api/v1/customer/client_assets`, data, config);
+    },
+
+    // Видалення посилання
+    deleteClientAsset(telegramID, assetID) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.delete(`${BASE_URL}/api/v1/customer/client_assets/${assetID}`, config);
+    },
+
+    // Збереження відповідей (status: draft)
+    saveCaseAnswers(telegramID, data) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.post(`${BASE_URL}/api/v1/customer/answers`, data, config);
+    },
+
+    // Оновлення відповідей (status: filled)
+    updateCaseAnswers(telegramID, data) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        return axios.post(`${BASE_URL}/api/v1/customer/answers/rewrite`, data, config);
+    },
 }
 
 export default apiService;
