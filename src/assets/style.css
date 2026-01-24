@@ -1,113 +1,133 @@
 @charset "UTF-8";
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-ExtraLight.ttf") format("truetype");
     font-weight: 200;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-ExtraLightItalic.ttf") format("truetype");
     font-weight: 200;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-Light.ttf") format("truetype");
     font-weight: 300;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-LightItalic.ttf") format("truetype");
     font-weight: 300;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-Italic.ttf") format("truetype");
     font-weight: 400;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-Medium.ttf") format("truetype");
     font-weight: 500;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-MediumItalic.ttf") format("truetype");
     font-weight: 500;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-SemiBold.ttf") format("truetype");
     font-weight: 600;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-SemiBoldItalic.ttf") format("truetype");
     font-weight: 600;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-Bold.ttf") format("truetype");
     font-weight: 700;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-BoldItalic.ttf") format("truetype");
     font-weight: 700;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-ExtraBold.ttf") format("truetype");
     font-weight: 800;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-ExtraBoldItalic.ttf") format("truetype");
     font-weight: 800;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-Black.ttf") format("truetype");
     font-weight: 900;
     font-style: normal;
 }
+
 @font-face {
     font-family: "Nunito";
     src: url("./fonts/Nunito/Nunito-BlackItalic.ttf") format("truetype");
     font-weight: 900;
     font-style: italic;
 }
+
 @font-face {
     font-family: "Anton";
     src: url("./fonts/Anton/Anton-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
 }
+
 body {
     font-family: "Nunito", sans-serif;
     overflow-x: hidden;
     background-color: #FDF8F3;
     margin: 0;
 }
-html, body {
+
+html,
+body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -156,9 +176,11 @@ html, body {
     justify-content: space-between;
     align-items: center;
 }
+
 .background-navbar.background-navbar--desktop {
     padding: 20px 10px 20px;
 }
+
 .site-content {
     flex: 1;
     overflow-y: auto;
@@ -173,10 +195,12 @@ html, body {
     justify-content: space-between;
     height: 100%;
 }
+
 .container-user-photo {
     display: flex;
     align-items: center;
 }
+
 .container-user-name {
     display: flex;
     justify-content: center;
@@ -186,6 +210,7 @@ html, body {
     font-weight: 700;
     margin: 0 0 0 10px;
 }
+
 .user-photo {
     background: #494B55;
     border-radius: 100%;
@@ -196,19 +221,23 @@ html, body {
     justify-content: center;
     overflow: hidden;
 }
+
 .user-photo img {
     width: 100%;
     height: 100%;
     border-radius: 50px;
     object-fit: cover;
 }
+
 .logotype-psychology img {
     width: 35px;
 }
+
 .side-bar {
     display: flex;
     justify-content: center;
 }
+
 .block_menu_button {
     position: fixed;
     bottom: 0px;
@@ -232,12 +261,10 @@ html, body {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-            90deg,
+    background: linear-gradient(90deg,
             transparent,
             rgba(255, 255, 255, 0.8),
-            transparent
-    );
+            transparent);
 }
 
 .glass-card::after {
@@ -247,19 +274,19 @@ html, body {
     left: 0;
     width: 0px;
     height: 100%;
-    background: linear-gradient(
-            180deg,
+    background: linear-gradient(180deg,
             rgba(255, 255, 255, 0.8),
             transparent,
-            rgba(255, 255, 255, 0.3)
-    );
+            rgba(255, 255, 255, 0.3));
     border-radius: 20px;
     z-index: -1;
 }
+
 .block_menu_button nav {
     display: flex;
     justify-content: center;
 }
+
 .block_menu_button nav ul {
     display: flex;
     list-style: none;
@@ -268,6 +295,7 @@ html, body {
     justify-content: center;
     align-items: center;
 }
+
 .block_menu_button nav ul li {
     background-color: #DAB189;
     border-radius: 12px;
@@ -280,18 +308,23 @@ html, body {
     box-shadow: 0 3px 8px rgb(0 0 0 / 25%);
     transition: .2s;
 }
+
 .block_menu_button nav ul li:hover {
     background-color: rgb(56, 94, 108);
 }
-.block_menu_button nav ul li img{
+
+.block_menu_button nav ul li img {
     width: 25px;
 }
+
 nav ul li.active {
     background-color: #72A8BA !important;
 }
+
 .container-tittle {
     width: 60%;
 }
+
 .container-tittle p {
     font-family: "Nunito";
     font-style: normal;
@@ -302,6 +335,7 @@ nav ul li.active {
     display: flex;
     justify-content: center;
 }
+
 .hr_title {
     border-radius: 0 10px 10px 0;
     border: 0px solid #494B55;
@@ -310,21 +344,25 @@ nav ul li.active {
     display: flex;
     justify-content: flex-start;
 }
+
 .content-main {
     margin: 10px 20px;
 }
+
 .content-main p {
     font-family: "Nunito";
     font-weight: 500;
     font-size: 18px;
     color: #494B55;
 }
+
 .container-links {
     margin: 0px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .container-links a {
     text-decoration: none;
     display: flex;
@@ -347,6 +385,7 @@ nav ul li.active {
     flex-direction: column;
     justify-content: center;
 }
+
 .block-links-main p {
     color: #FFF;
     font-family: Nunito;
@@ -355,12 +394,15 @@ nav ul li.active {
     text-align: center;
     margin: 0;
 }
+
 .block-links-main img {
     margin: 0px 0 0 7px;
 }
+
 .container-statistic {
     margin: 10px;
 }
+
 .container-statistic div canvas {
     height: 300px;
 }
@@ -371,12 +413,14 @@ nav ul li.active {
 .container-all-session {
     margin: 10px 20px 110px;
 }
+
 .under-title-text {
     font-family: "Nunito";
     font-weight: 500;
     font-size: 18px;
     color: #494B55;
 }
+
 .block-session {
     display: flex;
     padding: 12px 20px;
@@ -387,9 +431,11 @@ nav ul li.active {
     margin: 12px 0;
     text-decoration: none;
 }
+
 .block-session:nth-child(even) {
     background-color: #385E6C;
 }
+
 .block-session p {
     color: #FFFFFF;
     margin: 0;
@@ -400,26 +446,35 @@ nav ul li.active {
 .container-one-session {
     margin: 10px 20px 110px;
 }
+
 .one-section-content {
     font-family: "Nunito";
     font-weight: 500;
     font-size: 18px;
     color: #494B55;
 }
+
 .one-section-content p {
-    word-wrap: break-word; /* Break long words if necessary */
-    word-break: break-word; /* Break long words if necessary */
-    overflow-wrap: break-word; /* Break long words if necessary */
-    white-space: pre-wrap; /* Preserve whitespace and wrap as needed */
+    word-wrap: break-word;
+    /* Break long words if necessary */
+    word-break: break-word;
+    /* Break long words if necessary */
+    overflow-wrap: break-word;
+    /* Break long words if necessary */
+    white-space: pre-wrap;
+    /* Preserve whitespace and wrap as needed */
 }
+
 .one-section-content b {
     display: flex;
     align-items: center;
 }
+
 .one-section-content b img {
     width: 25px;
     margin: 0 10px 0 0;
 }
+
 .toast {
     display: flex;
     padding: 10px 10px;
@@ -432,6 +487,7 @@ nav ul li.active {
     font-weight: 600;
     margin: 10px;
 }
+
 .container-text-statistic {
     font-family: "Nunito";
     font-weight: 500;
@@ -439,32 +495,39 @@ nav ul li.active {
     color: #494B55;
     margin: 20px 10px 100px;
 }
+
 .container-text-statistic ul {
     list-style: auto;
     padding: 0 0 0 30px;
 }
+
 .uniq-text-single-statistic {
     list-style: none !important;
     padding: 0 0 0 0px !important;
 }
+
 @media (max-width: 430px) {
     .glass-card {
         padding: 0 1%;
     }
+
     .block_menu_button nav ul li {
         margin: 10px 8px;
     }
 }
+
 @media (max-width: 410px) {
     .block_menu_button nav ul li {
         margin: 10px 5px;
     }
 }
+
 @media (max-width: 370px) {
     .block_menu_button nav ul li {
         margin: 10px 4px;
     }
 }
+
 @media (max-width: 360px) {
     .block_menu_button nav ul li {
         margin: 10px 3px;
@@ -484,12 +547,14 @@ nav ul li.active {
     max-width: 50%;
     width: 50%;
 }
+
 .border-dashed {
     border: 2px dashed #72A8BA;
     border-bottom: none;
     border-left: none;
     border-right: none;
 }
+
 .border-dashed-left {
     border: 2px dashed #72A8BA;
     border-bottom: none;
@@ -497,6 +562,7 @@ nav ul li.active {
     border-right: none;
     border-top: none;
 }
+
 .field-title {
     padding: 20px 0 10px 0;
     text-align: center;
@@ -506,15 +572,19 @@ nav ul li.active {
     font-size: 17px;
     color: #494B55;
 }
+
 .padding-right {
     padding-right: 10px;
 }
+
 .padding-left {
     padding-left: 10px;
 }
+
 .field-content {
     padding-bottom: 10px;
 }
+
 .field-content {
     font-family: "Nunito";
     font-style: normal;
@@ -523,6 +593,7 @@ nav ul li.active {
     color: #494B55;
     margin: 0px 20px 10px;
 }
+
 .client-ones {
     padding: 0 3px 15px 3px;
     font-family: "Nunito";
@@ -533,27 +604,33 @@ nav ul li.active {
     line-height: 10px;
     text-align: center;
 }
+
 .client-ones img {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
 }
+
 .client-ones span {
     position: relative;
     top: 45px;
 }
+
 .client-header {
     display: flex;
     justify-content: center;
     margin: 20px 10px 0px;
 }
+
 .client-header img {
     width: 80%;
 }
+
 .container-cycle-couple {
     margin: 0 0 100px 0;
 }
+
 .no-cycle-message {
 
     p {
@@ -625,7 +702,9 @@ nav ul li.active {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .state__text {
@@ -685,7 +764,7 @@ nav ul li.active {
 .sv-card {
     background: #ffffff;
     border-radius: 12px;
-    padding:20px;
+    padding: 20px;
     box-shadow: 0 4px 9px rgb(0 0 0 / 10%);
     display: flex;
     flex-direction: column;
@@ -699,9 +778,11 @@ nav ul li.active {
     }
 
     .sv-card__text {
-        margin: 0;
-        color: #6E7181;
-        font: 600 16px / 1.2 "Nunito", system-ui, sans-serif;
+        p {
+            margin: 0;
+            color: #6E7181;
+            font: 600 16px / 1.2 "Nunito", system-ui, sans-serif;
+        }
     }
 
     .sv-card__value {
@@ -752,7 +833,7 @@ nav ul li.active {
         border-radius: 999px;
         background: #72A8BA;
         width: 0;
-        //transition: width 440ms ease;
+        /* transition: width 440ms ease; */
         transition: width 650ms cubic-bezier(0.2, 0.9, 0.2, 1);
     }
 

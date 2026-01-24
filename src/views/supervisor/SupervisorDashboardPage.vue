@@ -22,15 +22,17 @@
           <!-- Status card -->
           <div class="sv-card sv-card--status">
             <h3 class="sv-card__title">Поточний статус</h3>
-            <p class="sv-card__text">
-              <template v-if="lastConsultationDate">
-                Остання супервізія відбулася:
-                <span class="sv-card__value">{{ formatDate(lastConsultationDate) }}</span>
-              </template>
-              <template v-else>
-                 Супервізійна сесія ще не проведена
-              </template>
-            </p>
+            <div class="sv-card__text">
+              <p>
+                <template v-if="lastConsultationDate">
+                  Остання супервізія відбулася:
+                  <span class="sv-card__value">{{ formatDate(lastConsultationDate) }}</span>
+                </template>
+                <template v-else>
+                   Супервізійна сесія ще не проведена
+                </template>
+              </p>
+            </div>
           </div>
 
           <!-- Primary action -->
@@ -100,8 +102,8 @@ export default {
     const fetchData = async () => {
       loading.value = true;
       try {
-        //const telegramID = 7155108378;
-        const telegramID = localStorage.getItem('telegram_user_id');
+        const telegramID = 7155108378;
+        //const telegramID = localStorage.getItem('telegram_user_id');
 
         // Fetch EFCT Protocol
         const [efctResponse, consultationsResponse] = await Promise.all([
@@ -116,10 +118,16 @@ export default {
         ]);
 
         // Process EFCT Data
-        if (efctResponse && efctResponse.data && efctResponse.data.data) {
-             const data = efctResponse.data.data;
-             growthIndex.value = data.efct_index || 0;
-             efctText.value = data.efct_text || '';
+        if (efctResponse && efctResponse.data) {
+             const rawData = efctResponse.data;
+             // Check if it's directly an array or inside .data
+             const dataList = Array.isArray(rawData) ? rawData : (Array.isArray(rawData.data) ? rawData.data : []);
+             
+             if (dataList.length > 0) {
+                 const item = dataList[0];
+                 growthIndex.value = item.efct_index || 0;
+                 efctText.value = item.efct_text || '';
+             }
         }
 
         // Process Consultations
