@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://assistant.psy-kokh.online';
+export const BASE_URL = 'https://assistant.psy-kokh.online';
 
 const apiService = {
     // Функція для отримання аналітичних даних клієнтів для основної графіки
@@ -101,6 +101,17 @@ const apiService = {
             }
         };
         return axios.get(`${BASE_URL}/api/v1/customer/case_description`, config);
+    },
+
+    // Функція для генерації документів (PDF)
+    generateDocument(telegramID, data) {
+        const config = {
+            headers: {
+                'XTelegramId': telegramID
+            }
+        };
+        // data: { document_type: 'pdf', origin_type: '...' }
+        return axios.post(`${BASE_URL}/api/v1/customer/documents`, data, config);
     },
 
     // Отримання списку посилань

@@ -291,13 +291,9 @@ export default {
                 await fetchCaseDescription(); 
 
             } else if (caseStatus.value === 'filled') {
-                // For 'rewrite' endpoint:
-                // User specified "id" in "answers_data" relates to "form_items": [{"id": 174...
-                // So we send form_item.id as 'id'.
-                // We shouldn't filter by answerId because we might be overwriting/adding/syncing.
-                
+
                 const answersData = allItems.map(item => ({
-                        form_item_id: item.id, // form_item_id (as per "id елементу форми")
+                        id: item.answerId,
                         text_answer: item.value || ''
                     }));
                 
@@ -415,7 +411,7 @@ export default {
                             }
 
                             // Find answer
-                            const answer = data.answers.find(a => a.form_item.id === item.id);
+                            const answer = (data.answers || []).find(a => a.form_item_id === item.id);
                             
                             // Map item
                             grouped[mainCat][childCat].push({

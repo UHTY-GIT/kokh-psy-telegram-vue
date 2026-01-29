@@ -102,8 +102,8 @@ export default {
     const fetchData = async () => {
       loading.value = true;
       try {
-        const telegramID = 7155108378;
-        //const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = 7155108378;
+        const telegramID = localStorage.getItem('telegram_user_id');
 
         // Fetch EFCT Protocol
         const [efctResponse, consultationsResponse] = await Promise.all([

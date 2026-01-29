@@ -8,7 +8,7 @@
     <div class="content-main">
       <div class="sv-sessions">
         <p class="sv-sessions__subtitle">
-          Історія вашої роботи. Тут ви можете переглянути свої сесії 🤍
+          Історія вашого зростання. Тут ви бачите кількість і дати своїх супервізійних сесій 🤍
         </p>
 
         <!-- 1) LOADING -->
@@ -28,7 +28,7 @@
               v-for="session in sessions"
               :key="session.id"
               class="sv-session-item"
-              :to="{ name: 'SupervisorSessionDetails', params: { sessionId: session.id } }"
+              :to="none"
               :aria-label="`Відкрити сесію №${session.number}`"
           >
             <span class="sv-session-item__left">Сесія №{{ session.number }}</span>

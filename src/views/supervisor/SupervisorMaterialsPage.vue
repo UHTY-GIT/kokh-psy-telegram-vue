@@ -25,17 +25,19 @@
                 :key="item.key"
                 class="sv-materials__item"
                 type="button"
-                :disabled="!item.available"
+                :disabled="!item.available || downloadingItemKey === item.key"
                 @click="onItemClick(item)"
             >
               <span class="sv-materials__item-text">{{ item.title }}</span>
 
               <span class="sv-materials__item-icon" aria-hidden="true">
-              <img
-                  class="sv-materials__lock"
-                  :src="item.available ? lockOpenIcon : lockClosedIcon"
-                  :alt="item.available ? 'Доступно' : 'Недоступно'"
-              />
+                <div v-if="downloadingItemKey === item.key" class="item-spinner"></div>
+                <img
+                    v-else
+                    class="sv-materials__icon"
+                    :src="downloadIcon"
+                    alt="Завантажити"
+                />
             </span>
             </button>
           </div>
@@ -58,42 +60,82 @@
 
 <script>
 import { computed, onMounted, ref } from 'vue';
-import lockOpenIcon from '@/assets/icons/lock-open.svg';
-import lockClosedIcon from '@/assets/icons/lock-closed.svg';
+import downloadIcon from '@/assets/icons/download-files-icon.svg';
+import apiService, { BASE_URL } from '@/services/apiService';
+import M from 'materialize-css';
 
 export default {
   name: 'SupervisorMaterialsPage',
   setup() {
     const loading = ref(true);
     const errors = ref([]);
+    const downloadingItemKey = ref(null);
 
     const items = ref([
       {
         key: 'case_description',
+        origin_type: 'case_description_type',
         title: 'Опис кейсу',
         available: true,
       },
       {
         key: 'couple_cycle',
+        origin_type: 'couple_cycle_type',
         title: 'Цикл пари',
-        available: false,
+        available: true,
+      },
+      {
+        key: 'bonus_cycle',
+        origin_type: 'couple_cycle_bonus_type',
+        title: 'Бонус для пари',
+        available: true,
       },
     ]);
 
     const hasLocked = computed(() => items.value.some((i) => !i.available));
 
-    const onItemClick = (item) => {
-      // When locked, we do nothing (button is disabled anyway)
-      // When available, later you can call API to generate/download PDF.
-      // Example future behavior:
-      // - apiService.downloadSupervisorPdf(item.key)
-      // - or router.push(...) if it is a page
-      console.log('Clicked material item:', item.key);
+    const onItemClick = async (item) => {
+      if (downloadingItemKey.value) return; // Prevent multiple clicks
+      
+      downloadingItemKey.value = item.key;
+      //const telegramID = 7155108378;
+      const telegramID = localStorage.getItem('telegram_user_id');
+
+      try {
+        const payload = {
+            document_type: 'pdf',
+            origin_type: item.origin_type
+        };
+        
+        const response = await apiService.generateDocument(telegramID, payload);
+
+        const relativePath = response.data.data;
+        
+        if (relativePath) {
+            const fileUrl = `${BASE_URL}${relativePath}`; // Construct full URL
+            
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.target = '_blank'; // Open in new tab or download depending on browser/headers
+            link.download = `document_${item.key}.pdf`; // Suggest a filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+             throw new Error('File path not found in response');
+        }
+
+      } catch (error) {
+        console.error('Error downloading document:', error);
+        M.toast({ html: 'Помилка завантаження файлу' });
+      } finally {
+        downloadingItemKey.value = null;
+      }
     };
 
 
     onMounted(() => {
-      // TODO: fetch materials
+      // TODO: fetch materials availability/status if needed
       loading.value = false;
     });
 
@@ -103,8 +145,8 @@ export default {
       items,
       hasLocked,
       onItemClick,
-      lockOpenIcon,
-      lockClosedIcon,
+      downloadIcon,
+      downloadingItemKey,
     };
   }
 };
@@ -164,21 +206,30 @@ export default {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
     }
   }
 
-  &__lock {
+  &__icon {
     display: block;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   &__hint {
     margin: 20px 0;
     color: #494b55d9;
     font: 600 14px / 1.25 "Nunito", system-ui, sans-serif;
+  }
+
+  .item-spinner {
+    width: 100%;
+    height: 70%;
+    border-radius: 100%;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-top-color: #ffffff;
+    animation: spin 0.9s linear infinite;
   }
 }
 </style>

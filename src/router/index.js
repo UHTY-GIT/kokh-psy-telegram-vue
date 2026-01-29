@@ -65,13 +65,6 @@ const routes = [
     component: () => import('../views/supervisor/SupervisorSessionsPage.vue')
   },
   {
-    path: '/supervisor/sessions/:sessionId',
-    name: 'SupervisorSessionDetails',
-    meta: { layout: 'main', role: 'supervisor' },
-    component: () => import('../views/supervisor/SupervisorSessionDetailsPage.vue'),
-    props: true
-  },
-  {
     path: '/supervisor/materials',
     name: 'SupervisorMaterials',
     meta: { layout: 'main', role: 'supervisor' },
