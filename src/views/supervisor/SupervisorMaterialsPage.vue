@@ -128,7 +128,12 @@ export default {
 
       } catch (error) {
         console.error('Error downloading document:', error);
-        M.toast({ html: 'Помилка завантаження файлу' });
+        
+        if (error.response && error.response.status === 429) {
+             M.toast({ html: 'Ліміт запитів перевищено. Будь ласка, спробуйте пізніше.' });
+        } else {
+             M.toast({ html: 'Помилка завантаження файлу' });
+        }
       } finally {
         downloadingItemKey.value = null;
       }
