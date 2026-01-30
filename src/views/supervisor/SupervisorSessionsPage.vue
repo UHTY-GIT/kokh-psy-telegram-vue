@@ -24,16 +24,14 @@
 
         <!-- 3) LIST -->
         <div v-else class="sv-session-list">
-          <router-link
+          <div
               v-for="session in sessions"
               :key="session.id"
               class="sv-session-item"
-              :to="none"
-              :aria-label="`Відкрити сесію №${session.number}`"
           >
             <span class="sv-session-item__left">Сесія №{{ session.number }}</span>
             <span class="sv-session-item__right">{{ formatDate(session.consultation_date) }}</span>
-          </router-link>
+          </div>
         </div>
       </div>
 
@@ -63,6 +61,7 @@ export default {
       errors.value = [];
 
       try {
+        //const telegramID = 7155108378;
         const telegramID = localStorage.getItem("telegram_user_id");
         const res = await apiService.getClientConsultations(telegramID);
         sessions.value = res?.data?.data ?? [];

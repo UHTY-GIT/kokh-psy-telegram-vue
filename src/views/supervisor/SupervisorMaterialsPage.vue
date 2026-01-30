@@ -114,13 +114,14 @@ export default {
         if (relativePath) {
             const fileUrl = `${BASE_URL}${relativePath}`; // Construct full URL
             
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.target = '_blank'; // Open in new tab or download depending on browser/headers
-            link.download = `document_${item.key}.pdf`; // Suggest a filename
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Check if running in Telegram Mini App
+            if (window.Telegram?.WebApp) {
+                // Use Telegram's native method to open links (works best for downloads on mobile)
+                window.Telegram.WebApp.openLink(fileUrl, { try_instant_view: false });
+            } else {
+                // Fallback for standard web browser
+                window.open(fileUrl, '_blank');
+            }
         } else {
              throw new Error('File path not found in response');
         }
