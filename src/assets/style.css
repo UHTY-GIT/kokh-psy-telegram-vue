@@ -476,6 +476,8 @@ nav ul li.active {
 }
 
 .toast {
+    position: absolute;
+    width: 100%;
     display: flex;
     padding: 10px 10px;
     border-radius: 15px;
@@ -842,5 +844,14 @@ nav ul li.active {
         color: #494B55;
         font: 700 18px / 1.2 "Nunito", system-ui, sans-serif;
         text-align: center;
+    }
+}
+
+.sv-card__footer {
+    p {
+        font-size: 13px;
+        line-height: 1;
+        color: #767676;
+        font-weight: 400;
     }
 }
