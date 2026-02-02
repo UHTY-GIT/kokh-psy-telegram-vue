@@ -63,6 +63,18 @@
           </div>
         </section>
 
+
+
+        <!-- DEBUG INFO -->
+        <div class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
+          <h3>Debug Init Data</h3>
+          <p><strong>initData (Raw):</strong></p>
+          <pre style="white-space: pre-wrap; word-break: break-all;">{{ telegramInitData }}</pre>
+
+          <p><strong>initDataUnsafe:</strong></p>
+          <pre style="white-space: pre-wrap; word-break: break-all;">{{ telegramInitDataUnsafe }}</pre>
+        </div>
+
         <section class="sv-card__footer">
           <p>
             <b>© Катерина Кох, 2026. Усі права захищено.</b> <br>
@@ -88,6 +100,8 @@ export default {
     const animatedGrowthIndex = ref(0);
     const efctText = ref('');
     const lastConsultationDate = ref(null);
+    const telegramInitData = ref('');
+    const telegramInitDataUnsafe = ref('');
     let animateTimer = null;
 
     const runProgressAnimation = () => {
@@ -160,6 +174,11 @@ export default {
     };
 
     onMounted(() => {
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        telegramInitData.value = tg.initData;
+        telegramInitDataUnsafe.value = JSON.stringify(tg.initDataUnsafe, null, 2);
+      }
       fetchData();
     });
 
@@ -175,7 +194,9 @@ export default {
       efctText,
       lastConsultationDate,
       arrowButt,
-      formatDate
+      formatDate,
+      telegramInitData,
+      telegramInitDataUnsafe
     };
   }
 }

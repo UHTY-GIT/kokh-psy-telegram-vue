@@ -477,7 +477,7 @@ nav ul li.active {
 
 .toast {
     position: absolute;
-    width: 100%;
+    /*width: 90%;*/
     display: flex;
     padding: 10px 10px;
     border-radius: 15px;
@@ -485,9 +485,20 @@ nav ul li.active {
     align-items: center;
     background-color: #72A8BA;
     color: #FFFFFF;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 10px;
+    opacity: 1;
+    /* Mobile default positioning: 50px (padding-top) + 40px (content) + 20px (padding-bottom) + 5px (gap) */
+    top: calc(var(--tg-content-safe-area-inset-top, 0px) + 115px) !important;
+    z-index: 1000 !important;
+}
+
+@media (min-width: 769px) {
+    .toast {
+        /* Desktop positioning: 20px (padding-top) + 40px (content) + 20px (padding-bottom) + 5px (gap) */
+        top: 85px !important;
+    }
 }
 
 .container-text-statistic {

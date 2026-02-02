@@ -258,8 +258,8 @@ export default {
     };
 
     const saveCase = async () => {
-        const telegramID = 831595963;
-        //const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = 831595963;
+        const telegramID = localStorage.getItem('telegram_user_id');
 
         // Flatten blocks to get all items
         const allItems = [];
@@ -315,8 +315,8 @@ export default {
 
     const fetchVideos = async () => {
        try {
-        const telegramID = 831595963;
-        //const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = 831595963;
+        const telegramID = localStorage.getItem('telegram_user_id');
         const response = await apiService.getClientAssets(telegramID);
         // Ensure we handle array or wrapped object if backend varies
         videos.value = Array.isArray(response.data) ? response.data : (response.data.data || []);
@@ -343,8 +343,8 @@ export default {
       };
 
       try {
-        const telegramID = 831595963;
-        //const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = 831595963;
+        const telegramID = localStorage.getItem('telegram_user_id');
         await apiService.createClientAsset(telegramID, payload);
         await fetchVideos(); // Reload list
         newVideo.value = '';
@@ -357,8 +357,8 @@ export default {
 
     const removeVideo = async (id) => {
         try {
-            const telegramID = 831595963;
-            //const telegramID = localStorage.getItem('telegram_user_id');
+            //const telegramID = 831595963;
+            const telegramID = localStorage.getItem('telegram_user_id');
             await apiService.deleteClientAsset(telegramID, id);
             videos.value = videos.value.filter(v => v.id !== id);
         } catch (error) {
@@ -377,8 +377,8 @@ export default {
     const fetchCaseDescription = async () => {
       loading.value = true;
       try {
-        const telegramID = 831595963;
-        //const telegramID = localStorage.getItem('telegram_user_id');
+        //const telegramID = 831595963;
+        const telegramID = localStorage.getItem('telegram_user_id');
         
         await Promise.all([
              (async () => {
