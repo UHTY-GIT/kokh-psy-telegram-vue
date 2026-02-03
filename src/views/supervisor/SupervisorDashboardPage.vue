@@ -66,8 +66,8 @@
 
 
         <!-- DEBUG INFO -->
-        <div class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
-          <h3>Debug Init Data</h3>
+        <div v-if="isDebugMode" class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
+          <h3>Debug Init Data 🐞</h3>
           <p><strong>initData (Raw):</strong></p>
           <pre style="white-space: pre-wrap; word-break: break-all;">{{ telegramInitData }}</pre>
 
@@ -87,14 +87,16 @@
 </template>
 
 <script>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, computed } from 'vue';
 import arrowButt from '@/assets/icons/arrow-rigth-butt.svg'
 import apiService from '@/services/apiService';
 import M from 'materialize-css';
+import { useStore } from 'vuex';
 
 export default {
   name: 'SupervisorDashboardPage',
   setup() {
+    const store = useStore();
     const loading = ref(true);
     const growthIndex = ref(0);
     const animatedGrowthIndex = ref(0);
@@ -103,6 +105,8 @@ export default {
     const telegramInitData = ref('');
     const telegramInitDataUnsafe = ref('');
     let animateTimer = null;
+
+    const isDebugMode = computed(() => store.getters.isDebugMode);
 
     const runProgressAnimation = () => {
       // reset to 0 so animation can replay
@@ -196,7 +200,8 @@ export default {
       arrowButt,
       formatDate,
       telegramInitData,
-      telegramInitDataUnsafe
+      telegramInitDataUnsafe,
+      isDebugMode
     };
   }
 }

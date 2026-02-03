@@ -4,7 +4,7 @@
       <div class="user-photo">
         <img :src="fullUserPhotoUrl" alt="user photo">
       </div>
-      <span class="container-user-name">
+      <span class="container-user-name" @click="handleUserClick">
         {{ firstName }}
 <!--        {{ userName }} (ID: {{ userId }})-->
       </span>
@@ -25,10 +25,14 @@ import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
 import defaultUserPhoto from '@/assets/icons/emoji.iamrohit.png';
 import { useTelegramPlatform } from '@/composables/useTelegramPlatform';
+import { useStore } from 'vuex';
+import M from 'materialize-css';
 
 export default {
   name: 'NavBar',
   setup() {
+    const store = useStore();
+    const clickCount = ref(0);
     const userPhoto = ref('');
     const firstName = ref('');
     const userName = ref('');
@@ -95,6 +99,16 @@ export default {
       }
     };
 
+    const handleUserClick = () => {
+      clickCount.value++;
+      if (clickCount.value === 10) {
+        store.commit('SET_DEBUG_MODE', true);
+        M.toast({html: 'Debug Mode Enabled 🐞'});
+        clickCount.value = 0; // Reset or keep it? Requirement says "if user presses ... 10 times". Resetting allows re-trigger if needed, or prevents spam.
+      }
+    };
+
+
     onMounted(() => {
       fetchUserData();
       fetchUserProfile(userId.value);
@@ -107,6 +121,7 @@ export default {
       userId,
       errors,
       isDesktop,
+      handleUserClick,
     };
   }
 }
