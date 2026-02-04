@@ -61,8 +61,7 @@ export default {
         //const telegramID = 200208719;
         // errors.value.push('telegramID1 '+ telegramID);
 
-        const telegramID = localStorage.getItem('telegram_user_id');
-        const response = await apiService.getClientConsultations(telegramID);
+        const response = await apiService.getClientConsultations();
         sessions.value = response.data.data;
       } catch (error) {
         console.error('Error fetching sessions:', error);

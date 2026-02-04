@@ -99,15 +99,13 @@ export default {
       
       downloadingItemKey.value = item.key;
       //const telegramID = 7155108378;
-      const telegramID = localStorage.getItem('telegram_user_id');
-
       try {
         const payload = {
             document_type: 'pdf',
             origin_type: item.origin_type
         };
         
-        const response = await apiService.generateDocument(telegramID, payload);
+        const response = await apiService.generateDocument(payload);
 
         const relativePath = response.data.data;
         

@@ -62,8 +62,7 @@ export default {
 
       try {
         //const telegramID = 7155108378;
-        const telegramID = localStorage.getItem("telegram_user_id");
-        const res = await apiService.getClientConsultations(telegramID);
+        const res = await apiService.getClientConsultations();
         sessions.value = res?.data?.data ?? [];
       } catch (error) {
         console.error('Error fetching sessions:', error);
@@ -95,7 +94,7 @@ export default {
 
 <style lang="scss" scoped>
 .sv-sessions {
-  padding: 20px 0;
+  padding: 20px 0 100px;
 
   &__subtitle {
     margin: 0 0 25px;

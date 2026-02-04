@@ -59,15 +59,13 @@ export default {
     //const telegramID = 6112401748;
 
 
-    const telegramID = localStorage.getItem('telegram_user_id');
     const assessments = ref([]);
-
     const typeClient = ref('');
     const loading = ref(true);
 
     const fetchExpertAssessments = async () => {
       try {
-        const response = await apiService.getExpertAssessment(telegramID);
+        const response = await apiService.getExpertAssessment();
         assessments.value = response?.data?.data ?? [];
       } catch (error) {
         console.error('Error fetching expert assessments:', error);

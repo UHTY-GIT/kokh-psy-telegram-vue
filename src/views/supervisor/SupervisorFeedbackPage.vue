@@ -82,8 +82,7 @@ export default {
         errors.value = [];
         try {
             //const telegramID = 7155108378;
-            const telegramID = localStorage.getItem('telegram_user_id');
-            const response = await apiService.getEfctSkills(telegramID);
+            const response = await apiService.getEfctSkills();
             const data = response.data;
 
 

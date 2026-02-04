@@ -128,15 +128,13 @@ export default {
       loading.value = true;
       try {
         //const telegramID = 7155108378;
-        const telegramID = localStorage.getItem('telegram_user_id');
-
         // Fetch EFCT Protocol
         const [efctResponse, consultationsResponse] = await Promise.all([
-            apiService.getEfctProtocol(telegramID).catch(err => {
+            apiService.getEfctProtocol().catch(err => {
                 console.error("Error fetching EFCT protocol:", err);
                 return { data: { data: { efct_index: 0, efct_text: 'Невизначено' } } }; // Fallback
             }),
-            apiService.getClientConsultations(telegramID).catch(err => {
+            apiService.getClientConsultations().catch(err => {
                  console.error("Error fetching consultations:", err);
                  return { data: { data: [] } }; // Fallback
             })

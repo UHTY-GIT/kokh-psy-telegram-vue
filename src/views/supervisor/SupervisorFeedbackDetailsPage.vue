@@ -59,8 +59,7 @@ export default {
 
     const fetchAssessments = async () => {
        try {
-         const telegramID = localStorage.getItem('telegram_user_id');
-         const response = await apiService.getExpertAssessment(telegramID);
+         const response = await apiService.getExpertAssessment();
          assessments.value = response?.data?.data ?? [];
        } catch (error) {
          console.error('Error fetching supervisor feedback:', error);

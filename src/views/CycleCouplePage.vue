@@ -68,10 +68,8 @@ export default {
     const partnerClientName = ref("");
 
     const fetchCycleCouple = async () => {
-      const telegramID = localStorage.getItem('telegram_user_id');
-      //const telegramID = 6112401748;
       try {
-        const response = await apiService.getCycleCouple(telegramID);
+        const response = await apiService.getCycleCouple();
         const data = response.data.data;
 
         if (data.main_client_couple_cycle) {

@@ -258,9 +258,6 @@ export default {
     };
 
     const saveCase = async () => {
-        //const telegramID = 831595963;
-        const telegramID = localStorage.getItem('telegram_user_id');
-
         // Flatten blocks to get all items
         const allItems = [];
         blocks.value.forEach(mainBlock => {
@@ -285,25 +282,23 @@ export default {
                     answers_data: answersData
                 };
 
-                await apiService.saveCaseAnswers(telegramID, payload);
+                await apiService.saveCaseAnswers(payload);
                 M.toast({ html: 'Чернетка збережена' });
                 // Optional: refresh data to get status 'filled' and answer IDs?
                 await fetchCaseDescription(); 
 
             } else if (caseStatus.value === 'filled') {
-
                 const answersData = allItems.map(item => ({
                         id: item.answerId,
                         text_answer: item.value || ''
                     }));
                 
-                // Assuming we also need context (answerable_id) for rewrite/update if using form_item_ids
                 const payload = {
                     client_id: clientId.value,
                     answers_data: answersData
                 };
 
-                await apiService.updateCaseAnswers(telegramID, payload);
+                await apiService.updateCaseAnswers(payload);
                 M.toast({ html: 'Зміни збережено' });
                 await fetchCaseDescription();
             }
@@ -316,8 +311,7 @@ export default {
     const fetchVideos = async () => {
        try {
         //const telegramID = 831595963;
-        const telegramID = localStorage.getItem('telegram_user_id');
-        const response = await apiService.getClientAssets(telegramID);
+        const response = await apiService.getClientAssets();
         // Ensure we handle array or wrapped object if backend varies
         videos.value = Array.isArray(response.data) ? response.data : (response.data.data || []);
       } catch (error) {
@@ -344,8 +338,7 @@ export default {
 
       try {
         //const telegramID = 831595963;
-        const telegramID = localStorage.getItem('telegram_user_id');
-        await apiService.createClientAsset(telegramID, payload);
+        await apiService.createClientAsset(payload);
         await fetchVideos(); // Reload list
         newVideo.value = '';
         addingVideo.value = false;
@@ -358,8 +351,7 @@ export default {
     const removeVideo = async (id) => {
         try {
             //const telegramID = 831595963;
-            const telegramID = localStorage.getItem('telegram_user_id');
-            await apiService.deleteClientAsset(telegramID, id);
+            await apiService.deleteClientAsset(id);
             videos.value = videos.value.filter(v => v.id !== id);
         } catch (error) {
              console.error('Error deleting video asset:', error);
@@ -377,12 +369,9 @@ export default {
     const fetchCaseDescription = async () => {
       loading.value = true;
       try {
-        //const telegramID = 831595963;
-        const telegramID = localStorage.getItem('telegram_user_id');
-        
         await Promise.all([
              (async () => {
-                 const response = await apiService.getCaseDescription(telegramID);
+                 const response = await apiService.getCaseDescription();
                  const data = response.data.data;
                  if (data) {
                     version.value = data.case_version;
@@ -488,7 +477,7 @@ export default {
 
 <style lang="scss" scoped>
 .sv-case {
-  padding: 20px 0 50px;
+  padding: 20px 0 100px;
 
   &__intro {
     margin: 0 0 25px;

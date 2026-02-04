@@ -45,13 +45,18 @@ export default {
       return userPhoto.value || defaultUserPhoto;
     });
 
-    const fetchUserData = () => {
+    const fetchUserData = async () => {
       const tg = window.Telegram?.WebApp;
 
       if (!tg) {
         errors.value.push('Telegram WebApp недоступний');
         return;
       }
+
+      // Init auth (get token)
+      await import('@/services/authService').then(module => {
+         module.default.validateAndLogin();
+      });
 
       const initData = tg.initDataUnsafe;
 
@@ -65,8 +70,8 @@ export default {
         userName.value = user.first_name;
         userId.value = user.id || '';
         loadUserPhoto(user.photo_url);
-        saveUserDataToLocalStorage(user.id);
-        fetchUserProfile(user.id); // Fetch user profile data from API
+        // saveUserDataToLocalStorage(user.id); // No longer needed for API, but keeping for legacy reasons if needed? Plan says remove dependencies.
+        fetchUserProfile(); // No ID needed
       } else {
         errors.value.push('Не знайдено дані користувача');
       }
@@ -80,13 +85,11 @@ export default {
       }
     };
 
-    const saveUserDataToLocalStorage = (id) => {
-      localStorage.setItem('telegram_user_id', id);
-    };
 
-    const fetchUserProfile = async (telegramID) => {
+
+    const fetchUserProfile = async () => {
       try {
-        const response = await apiService.getAllInformationClient(telegramID);
+        const response = await apiService.getAllInformationClient();
         const userProfile = response.data.data;
         firstName.value = userProfile.name;
         // errors.value.push('firstName.value' + userProfile.name);
@@ -111,7 +114,8 @@ export default {
 
     onMounted(() => {
       fetchUserData();
-      fetchUserProfile(userId.value);
+      // fetchUserProfile calls implicitly inside fetchUserData now or should be independent?
+      // fetchUserData calls fetchUserProfile, so we don't need to call it again with userId.value
     });
 
     return {

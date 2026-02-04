@@ -72,14 +72,8 @@ export default {
       try {
         //const originType = 'individual';
         //const telegramID = 6112401748;
-        const telegramID = localStorage.getItem('telegram_user_id');
-        const originType = localStorage.getItem('origin_type'); // Get origin_type from local storage
-
-        if (!telegramID) {
-          throw new Error('Telegram ID not found in local storage');
-        }
-
-        const response = await apiService.getGraphicsClient(telegramID);
+        const response = await apiService.getGraphicsClient();
+        const originType = localStorage.getItem('origin_type');
         const data = response.data.data;
 
         if (originType === 'individual') {
