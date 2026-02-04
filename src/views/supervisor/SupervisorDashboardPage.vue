@@ -66,7 +66,7 @@
 
 
         <!-- DEBUG INFO -->
-        <div class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
+        <div v-if="isDebugMode" class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
           <h3>Debug Init Data 🐞</h3>
           <p><strong>initData (Raw):</strong></p>
           <pre style="white-space: pre-wrap; word-break: break-all;">{{ telegramInitData }}</pre>
