@@ -20,9 +20,9 @@
             історія змін збережеться.
           </p>
 
-          <p class="sv-case__version" v-if="version > 0">
-            Версія оновлення —
-            <span class="sv-case__version-badge">{{ version }}</span>
+          <p class="sv-case__version" v-if="lastUpdated">
+            Останнє оновлення —
+            <span class="sv-case__version-badge">{{ lastUpdated }}</span>
           </p>
 
           <div v-for="(mainBlock, mIdx) in blocks" :key="mIdx" class="case-category">
@@ -214,7 +214,7 @@ export default {
   name: 'SupervisorCaseDescriptionPage',
   setup() {
     const loading = ref(true);
-    const version = ref(0);
+    const lastUpdated = ref(null);
     const caseId = ref(null); // Case ID
     const clientId = ref(null); // Client ID from data.client.id
     const caseStatus = ref(null);
@@ -225,6 +225,20 @@ export default {
     const newVideo = ref('');
 
     const activeDropdownId = ref(null);
+
+    const formatDate = (isoStr) => {
+        if (!isoStr) return null;
+        try {
+            const d = new Date(isoStr);
+            if (isNaN(d.getTime())) return null; // Invalid date
+            const pad = (n) => n.toString().padStart(2, '0');
+            // Format: "HH:mm - DD.MM.YYYY"
+            return `${pad(d.getHours())}:${pad(d.getMinutes())} - ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+        } catch (e) {
+            console.error("Date formatting error", e);
+            return null;
+        }
+    };
 
     const toggleSubcategory = (subBlock) => {
          if (subBlock.isOpen) {
@@ -374,7 +388,7 @@ export default {
                  const response = await apiService.getCaseDescription();
                  const data = response.data.data;
                  if (data) {
-                    version.value = data.case_version;
+                    lastUpdated.value = formatDate(data.updated_at);
                     caseId.value = data.id;
                     caseStatus.value = data.status; // 'draft' or 'filled'
                     
@@ -457,7 +471,7 @@ export default {
 
     return {
       loading,
-      version,
+      lastUpdated,
       blocks,
       videos,
       addingVideo,
@@ -591,6 +605,7 @@ export default {
       border-radius: 12px 12px 0 0;
       padding: 14px 10px;
       gap: 10px;
+      position: relative;
   }
 
   &__title {
@@ -601,6 +616,11 @@ export default {
 
   &__help {
       position: relative;
+      
+      @media (max-width: 650px) {
+        position: static;
+      }
+
       display: flex;
       align-items: center;
       justify-content: center;
@@ -638,6 +658,22 @@ export default {
       pointer-events: none;
       transition: all 0.2s ease;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+
+      @media (max-width: 650px) {
+          position: absolute;
+          top: auto;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-bottom: 10px;
+          max-width: 90%;
+          width: max-content;
+          z-index: 20;
+
+          &::after {
+              display: none;
+          }
+      }
 
       /* Triangle arrow */
       &::after {
