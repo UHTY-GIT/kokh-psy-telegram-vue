@@ -302,7 +302,9 @@ export default {
                 await fetchCaseDescription(); 
 
             } else if (caseStatus.value === 'filled') {
-                const answersData = allItems.map(item => ({
+                const answersData = allItems
+                    .filter(item => item.answerId !== null || (item.value && item.value.trim() !== ''))
+                    .map(item => ({
                         id: item.answerId,
                         text_answer: item.value || ''
                     }));

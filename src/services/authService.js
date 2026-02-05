@@ -38,7 +38,7 @@ const authService = {
         // --- DATA FOR DEBUGGING ---
         // Uncomment and paste your initData inside the string to debug
         const DEBUG_INIT_DATA = null;
-        //const DEBUG_INIT_DATA = ""
+        //const DEBUG_INIT_DATA = "user=%7B%22id%22%3A7155108378%2C%22first_name%22%3A%22N%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ok_yak_zavzdu%22%2C%22language_code%22%3A%22uk%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F9mJ_Iw932T832ag_DXeJQYzfYzNob3z3jGZ3HbVY7H1I8rubufhjkOgiaJpZrsV7.svg%22%7D&chat_instance=4579935037537093904&chat_type=sender&auth_date=1770299510&signature=RHhOBgbIndaGcoDKM8drKlEVmNTH4inQZrvWfPuj98qpWnNb_ldQ4kxjTJF8n_KCDE1PbhBRfF_wO-QkHk4kBg&hash=336eecf8684893d7fd2c0be2b58e4c2da944aa778ff694be1edcf5ba3bb935d5"
 
         let initData = null;
 
