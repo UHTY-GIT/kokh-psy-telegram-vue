@@ -43,6 +43,46 @@
             />
           </div>
         </div>
+
+        <!-- SPOILER SECTION -->
+        <div class="sv-feedback__spoiler-section">
+            <div 
+                class="case-subcategory__header"
+                @click="toggleEfctSkills"
+            >
+                <h3 class="case-subcategory__title">Навички EFCT: посилання</h3>
+                <svg 
+                    class="case-subcategory__arrow" 
+                    :class="{ 'is-open': isEfctSkillsOpen }"
+                    width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path d="M6 9L12 15L18 9" stroke="#494B55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div 
+                class="case-subcategory__content-wrapper" 
+                :class="{ 'is-open': isEfctSkillsOpen }"
+            >
+                <div class="case-subcategory__content-inner">
+                    <div class="spoiler-content">
+                        <b class="spoiler-content__subtitle">Джерела, звідки взяті навички EFCT (ICEEFT)</b>
+                        <ul class="spoiler-content__list">
+                            <li><a href="#" @click.prevent="openExternalLink('https://iceeft.com/eft-certification/')">ICEEFT — EFT Certification</a></li>
+                            <li><a href="#" @click.prevent="openExternalLink('https://iceeft.com/wp-content/uploads/2025/07/EFT-Therapist-Certification-Checklist-ALL-MODALITIES-2024.pdf')">ICEEFT Therapist Certification Checklist (PDF)</a></li>
+                            <li><a href="#" @click.prevent="openExternalLink('https://members.iceeft.com/')">ICEEFT Members Website</a></li>
+                            <li><a href="#" @click.prevent="openExternalLink('https://drive.google.com/file/d/1ZE5udJR_rS9Ag1diB2CqZ6mrJc-q3Y_E/view?usp=drivesdk')">General Overview of Skills Required for EFT Certification</a></li>
+                        </ul>
+
+                        <b class="spoiler-content__subtitle">Оновлений мануал для супервізорів і терапевтів (EFCT)</b>
+                        <ul class="spoiler-content__list">
+                             <li><a href="#" @click.prevent="openExternalLink('https://drive.google.com/file/d/1FUC9HKMkxBS4UsyiyNXLRVvn05-_OEB4/view?usp=drivesdk')">EFCT Supervision Manual (Google Drive)</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -65,6 +105,7 @@ export default {
     const errors = ref([]);
     const chartLabels = ref([]);
     const chartValues = ref([]);
+    const isEfctSkillsOpen = ref(false);
 
     const RADAR_ORDER = [
       'Stage 1 ДЕЕСКАЛАЦІЯ',
@@ -76,6 +117,19 @@ export default {
     ];
 
 
+
+
+    const toggleEfctSkills = () => {
+        isEfctSkillsOpen.value = !isEfctSkillsOpen.value;
+    };
+
+    const openExternalLink = (url) => {
+        if (window.Telegram?.WebApp) {
+            window.Telegram.WebApp.openLink(url, { try_instant_view: false });
+        } else {
+            window.open(url, '_blank');
+        }
+    };
 
     const fetchSkills = async () => {
         loading.value = true;
@@ -129,7 +183,10 @@ export default {
       errors,
       arrowRightIcon,
       chartLabels,
-      chartValues
+      chartValues,
+      isEfctSkillsOpen,
+      toggleEfctSkills,
+      openExternalLink
     };
   }
 };
@@ -208,7 +265,98 @@ export default {
     width: 100%;
     max-width: 680px;
     margin: 0 auto;
-    margin-bottom: 80px;
+    margin-bottom: 50px;
+  }
+
+  &__spoiler-section {
+    margin: 0 20px 80px;
   }
 }
+
+/* Spoiler Styles */
+.case-subcategory {
+    &__header {
+        display: grid;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        gap: 10px;
+        grid-template-columns: 1fr auto;
+        
+        &:hover .case-subcategory__title, &:hover .case-subcategory__arrow path {
+            color: #E09F56;
+            stroke: #E09F56;
+        }
+    }
+
+    &__title {
+        font: 700 18px / 1.2 "Nunito", system-ui, sans-serif;
+        color: #494B55;
+        margin: 0;
+        transition: color 0.3s;
+    }
+
+    &__arrow {
+        transition: transform 0.3s ease;
+        &.is-open {
+            transform: rotate(180deg);
+        }
+    }
+
+    /* Accordion Transition */
+    &__content-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease-out;
+        overflow: hidden; 
+        
+        &.is-open {
+            grid-template-rows: 1fr;
+        }
+    }
+
+    &__content-inner {
+        min-height: 0;
+        padding-bottom: 1px;
+    }
+}
+
+.spoiler-content {
+    margin-top: 15px;
+    color: #494B55;
+    font: 400 15px/1.4 "Nunito", system-ui, sans-serif;
+
+    &__subtitle {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #494B55;
+    }
+
+    &__list {
+        margin: 0 0 15px;
+        padding-left: 20px;
+        list-style-type: disc;
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        a {
+            color: #494B55;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
+            
+            &:hover {
+                color: #72a8ba;
+            }
+        }
+    }
+}
+
 </style>
