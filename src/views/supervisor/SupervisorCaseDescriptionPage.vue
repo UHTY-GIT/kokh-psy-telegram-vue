@@ -20,10 +20,20 @@
             історія змін збережеться.
           </p>
 
-          <p class="sv-case__version" v-if="lastUpdated">
-            Останнє оновлення —
-            <span class="sv-case__version-badge">{{ lastUpdated }}</span>
-          </p>
+          <div class="sv-case__header-row" v-if="lastUpdated">
+            <div class="sv-case__version">
+                Останнє оновлення —
+            </div>
+
+            <div v-if="caseStatus === 'filled'" class="case-actions">
+                <span class="sv-case__version-badge">{{ lastUpdated }}</span>
+                <button class="case-clear-btn" @click="clearForm">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.9995 13L10.9995 6.00004M20.9995 21H7.99955M10.9368 20.0628L19.6054 11.3941C20.7935 10.2061 21.3875 9.61207 21.6101 8.92709C21.8058 8.32456 21.8058 7.67551 21.6101 7.07298C21.3875 6.388 20.7935 5.79397 19.6054 4.60592L19.3937 4.39415C18.2056 3.2061 17.6116 2.61207 16.9266 2.38951C16.3241 2.19373 15.675 2.19373 15.0725 2.38951C14.3875 2.61207 13.7935 3.2061 12.6054 4.39415L4.39366 12.6059C3.20561 13.794 2.61158 14.388 2.38902 15.073C2.19324 15.6755 2.19324 16.3246 2.38902 16.9271C2.61158 17.6121 3.20561 18.2061 4.39366 19.3941L5.06229 20.0628C5.40819 20.4087 5.58114 20.5816 5.78298 20.7053C5.96192 20.815 6.15701 20.8958 6.36108 20.9448C6.59126 21 6.83585 21 7.32503 21H8.67406C9.16324 21 9.40784 21 9.63801 20.9448C9.84208 20.8958 10.0372 20.815 10.2161 20.7053C10.418 20.5816 10.5909 20.4087 10.9368 20.0628Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+            </div>
+          </div>
 
           <div v-for="(mainBlock, mIdx) in blocks" :key="mIdx" class="case-category">
              <h2 class="case-category__title">{{ mainBlock.mainTitle }}</h2>
@@ -215,8 +225,8 @@ export default {
   setup() {
     const loading = ref(true);
     const lastUpdated = ref(null);
-    const caseId = ref(null); // Case ID
-    const clientId = ref(null); // Client ID from data.client.id
+    const caseId = ref(null); // ID справи
+    const clientId = ref(null); // ID клієнта з data.client.id
     const caseStatus = ref(null);
     const blocks = ref([]);
     const videos = ref([]);
@@ -232,7 +242,7 @@ export default {
             const d = new Date(isoStr);
             if (isNaN(d.getTime())) return null; // Invalid date
             const pad = (n) => n.toString().padStart(2, '0');
-            // Format: "HH:mm - DD.MM.YYYY"
+            // Формат: "HH:mm - DD.MM.YYYY"
             return `${pad(d.getHours())}:${pad(d.getMinutes())} - ${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
         } catch (e) {
             console.error("Date formatting error", e);
@@ -272,7 +282,7 @@ export default {
     };
 
     const saveCase = async () => {
-        // Flatten blocks to get all items
+        // Збираємо всі елементи
         const allItems = [];
         blocks.value.forEach(mainBlock => {
             mainBlock.subcategories.forEach(subBlock => {
@@ -298,25 +308,62 @@ export default {
 
                 await apiService.saveCaseAnswers(payload);
                 M.toast({ html: 'Чернетка збережена' });
-                // Optional: refresh data to get status 'filled' and answer IDs?
+                 // завантаження свіжих даних
                 await fetchCaseDescription(); 
 
             } else if (caseStatus.value === 'filled') {
-                const answersData = allItems
-                    .filter(item => item.answerId !== null || (item.value && item.value.trim() !== ''))
-                    .map(item => ({
+                // 1. Визначити нові відповіді (наявне значення, але немає answerId)
+                const newItems = allItems.filter(item => 
+                    item.answerId === null && item.value && item.value.trim() !== ''
+                );
+
+                // 2. Визначити існуючі відповіді (наявний answerId)
+                // надсилаємо їх, навіть якщо вони порожні, щоб дозволити очищення значень
+                const existingItems = allItems.filter(item => item.answerId !== null);
+
+                let savedNew = false;
+                let updatedOld = false;
+
+                // --- А. Зберегти нові елементи, якщо є ---
+                if (newItems.length > 0) {
+                     const newAnswersData = newItems.map(item => ({
+                        form_item_id: item.id,
+                        text_answer: item.value
+                    }));
+
+                    const savePayload = {
+                        client_id: clientId.value,
+                        answerable_id: caseId.value,
+                        answerable_type: 'CaseDescription',
+                        answers_data: newAnswersData
+                    };
+
+                    await apiService.saveCaseAnswers(savePayload);
+                    savedNew = true;
+                }
+
+                // --- Б. Оновити існуючі елементи, якщо є ---
+                if (existingItems.length > 0) {
+                     const updateAnswersData = existingItems.map(item => ({
                         id: item.answerId,
                         text_answer: item.value || ''
                     }));
                 
-                const payload = {
-                    client_id: clientId.value,
-                    answers_data: answersData
-                };
+                    const updatePayload = {
+                        client_id: clientId.value,
+                        answers_data: updateAnswersData
+                    };
 
-                await apiService.updateCaseAnswers(payload);
-                M.toast({ html: 'Зміни збережено' });
-                await fetchCaseDescription();
+                    await apiService.updateCaseAnswers(updatePayload);
+                    updatedOld = true;
+                }
+
+                if (savedNew || updatedOld) {
+                    M.toast({ html: 'Зміни збережено' });
+                    await fetchCaseDescription();
+                } else {
+                     M.toast({ html: 'Немає змін для збереження' });
+                }
             }
         } catch (error) {
             console.error('Error saving case:', error);
@@ -328,7 +375,7 @@ export default {
        try {
         //const telegramID = 831595963;
         const response = await apiService.getClientAssets();
-        // Ensure we handle array or wrapped object if backend varies
+        // перевірка на масив або об'єкт, якщо бекенд змінюється
         videos.value = Array.isArray(response.data) ? response.data : (response.data.data || []);
       } catch (error) {
         console.error('Error fetching videos:', error);
@@ -355,7 +402,7 @@ export default {
       try {
         //const telegramID = 831595963;
         await apiService.createClientAsset(payload);
-        await fetchVideos(); // Reload list
+        await fetchVideos(); // оновлення списку
         newVideo.value = '';
         addingVideo.value = false;
       } catch (error) {
@@ -380,6 +427,78 @@ export default {
       if (url.includes('youtube') || url.includes('youtu.be')) return 'you_tube';
       if (url.includes('drive.google')) return 'google_drive';
       return 'other';
+    };
+
+    const clearForm = () => {
+        const confirmAction = (confirmed) => {
+            if (confirmed) {
+                blocks.value.forEach(mainBlock => {
+                    mainBlock.subcategories.forEach(subBlock => {
+                         subBlock.items.forEach(item => {
+                             if(item.type === 'text' || item.type === 'string' || item.type === 'select_v2') {
+                                 item.value = '';
+                                 // Ми залишаємо answerId, щоб при збереженні оновити існуючу відповідь на порожню?
+                                 // насправді, "очищення форми для нових даних" зазвичай означає, що ми хочемо розглядати це як новий запис?
+                                 // але в описі сказано "форма (введення, текстове поле, вибір) може бути очищена для введення нових даних". 
+                                 // Там не сказано "видалити старі дані". 
+                                 // Однак, `caseStatus === 'filled'` означає, що ми редагуємо існуючий набір відповідей.
+                                 // Якщо користувач очищає і зберігає, бекенд `updateCaseAnswers` ймовірно отримає порожні рядки.
+                                 // Якщо мета - "ввести нові дані" в *ту ж* структуру справи, це правильно.
+                             }
+                         });
+                    });
+                });
+                M.toast({ html: 'Форма очищена' });
+            }
+        };
+
+        // перевірка наявності Telegram WebApp
+        // Пріоритет: showPopup (v6.2+) -> showConfirm (v6.0+) -> window.confirm (Browser/Legacy)
+        
+        let handled = false;
+
+        // спроба використати showPopup (v6.2+)
+        // перевірка наявності методу
+        if (window.Telegram?.WebApp?.showPopup) {
+            try {
+                window.Telegram.WebApp.showPopup({
+                    title: 'Очищення форми',
+                    message: 'Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.',
+                    buttons: [
+                        {id: 'delete', type: 'destructive', text: 'Очистити'},
+                        {id: 'cancel', type: 'cancel'}
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === 'delete') {
+                        confirmAction(true);
+                    } else {
+                        confirmAction(false); // Скасовано
+                    }
+                });
+                handled = true;
+            } catch (e) {
+                console.warn('Telegram WebApp showPopup failed:', e);
+                // перехід до наступного методу
+                handled = false;
+            }
+        }
+
+        // спроба використати showConfirm (v6.0), якщо showPopup не вдалося або недоступний
+        if (!handled && window.Telegram?.WebApp?.showConfirm) {
+             try {
+                 window.Telegram.WebApp.showConfirm("Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.", confirmAction);
+                 handled = true;
+            } catch (e) {
+                console.warn('Telegram WebApp showConfirm failed:', e);
+                handled = false;
+            }
+        }
+
+        // використання стандартного confirm браузера, якщо Telegram WebApp не вдалося або недоступний
+        if (!handled) {
+            const result = confirm("Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.");
+            confirmAction(result);
+        }
     };
 
     const fetchCaseDescription = async () => {
@@ -485,7 +604,11 @@ export default {
       toggleDropdown,
       selectOption,
       activeDropdownId,
-      saveCase
+      saveCase,
+      clearForm,
+      caseStatus,
+      caseId,
+      clientId
     };
   }
 };
@@ -501,6 +624,14 @@ export default {
     font: 500 18px / 1.2 "Nunito", system-ui, sans-serif;
   }
 
+  &__header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    flex-direction: column;
+  }
+
   &__version {
     font: 600 15px "Nunito", system-ui, sans-serif;
     color: #494b55;
@@ -510,7 +641,6 @@ export default {
       color: #fff;
       padding: 3px 9px;
       border-radius: 50px;
-      margin-left: 4px;
     }
   }
 }
@@ -947,5 +1077,38 @@ export default {
   &:hover {
     background: #72A8BA;
   }
+}
+
+.case-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.case-clear-btn {
+    background: #d7b48c;
+    border: 1px solid #d7b48c;
+    color: #fff;
+    padding: 10px 10px;
+    border-radius: 12px;
+    font: 600 16px / 1.2 "Nunito", system-ui, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    &:hover {
+        background: #72A8BA;
+        color: #fff;
+        border-color: #72A8BA;
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
 }
 </style>
