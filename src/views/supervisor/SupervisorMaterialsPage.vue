@@ -86,7 +86,7 @@ export default {
       },
       {
         key: 'bonus_cycle',
-        origin_type: 'couple_cycle_bonus_type',
+        origin_type: 'bonus_of_couple_cycle_type',
         title: 'Бонус для пари',
         available: true,
       },
