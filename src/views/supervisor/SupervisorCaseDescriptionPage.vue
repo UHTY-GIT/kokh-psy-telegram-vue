@@ -827,12 +827,12 @@ export default {
     padding: 14px 20px;
     background: #4a4d55;
     color: #fff;
-    border: 1px solid transparent; 
-    text-transform: lowercase;
+    border: 1px solid transparent;
     font: 600 16px / 1.2 "Nunito", system-ui, sans-serif;
 
     &::placeholder {
         color: #bbb;
+        text-transform: lowercase;
     }
 
     &:focus {
