@@ -204,10 +204,15 @@
           </div>
 
           <!-- FLOATING SAVE -->
-          <button class="case-save" @click="saveCase">
-            <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18.5 23.5002L6 23.5M18.5 23.5002L19.5039 23.5C20.9013 23.5 21.6 23.5 22.1342 23.2278C22.6047 22.9881 22.9881 22.6054 23.2278 22.135C23.5 21.6008 23.5 20.9013 23.5 19.5039V8.77443C23.5 8.21341 23.5 7.93151 23.4402 7.66382C23.3868 7.425 23.2991 7.19565 23.179 6.98244C23.0458 6.74592 22.8588 6.53819 22.4911 6.12973L19.0471 2.30301C18.6211 1.82967 18.4052 1.58976 18.146 1.41748C17.9128 1.2625 17.6553 1.14823 17.3841 1.07858C17.0781 1 16.7498 1 16.0938 1H5.00024C3.60011 1 2.89953 1 2.36475 1.27248C1.89434 1.51217 1.51217 1.89434 1.27248 2.36475C1 2.89953 1 3.60011 1 5.00024V19.5002C1 20.9004 1 21.5995 1.27248 22.1342C1.51217 22.6047 1.89434 22.9881 2.36475 23.2278C2.899 23.5 3.59874 23.5 4.99614 23.5H6M18.5 23.5002V18.7461C18.5 17.3487 18.5 16.649 18.2278 16.1147C17.9881 15.6443 17.6046 15.2622 17.1342 15.0225C16.5995 14.75 15.9004 14.75 14.5002 14.75H10.0002C8.60011 14.75 7.89953 14.75 7.36475 15.0225C6.89434 15.2622 6.51217 15.6443 6.27248 16.1147C6 16.6495 6 17.3501 6 18.7502V23.5M16 6H8.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+          <button class="case-save" @click="saveCase" :disabled="isSaving" :class="{ 'opacity-50': isSaving }">
+            <template v-if="!isSaving">
+              <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.5 23.5002L6 23.5M18.5 23.5002L19.5039 23.5C20.9013 23.5 21.6 23.5 22.1342 23.2278C22.6047 22.9881 22.9881 22.6054 23.2278 22.135C23.5 21.6008 23.5 20.9013 23.5 19.5039V8.77443C23.5 8.21341 23.5 7.93151 23.4402 7.66382C23.3868 7.425 23.2991 7.19565 23.179 6.98244C23.0458 6.74592 22.8588 6.53819 22.4911 6.12973L19.0471 2.30301C18.6211 1.82967 18.4052 1.58976 18.146 1.41748C17.9128 1.2625 17.6553 1.14823 17.3841 1.07858C17.0781 1 16.7498 1 16.0938 1H5.00024C3.60011 1 2.89953 1 2.36475 1.27248C1.89434 1.51217 1.51217 1.89434 1.27248 2.36475C1 2.89953 1 3.60011 1 5.00024V19.5002C1 20.9004 1 21.5995 1.27248 22.1342C1.51217 22.6047 1.89434 22.9881 2.36475 23.2278C2.899 23.5 3.59874 23.5 4.99614 23.5H6M18.5 23.5002V18.7461C18.5 17.3487 18.5 16.649 18.2278 16.1147C17.9881 15.6443 17.6046 15.2622 17.1342 15.0225C16.5995 14.75 15.9004 14.75 14.5002 14.75H10.0002C8.60011 14.75 7.89953 14.75 7.36475 15.0225C6.89434 15.2622 6.51217 15.6443 6.27248 16.1147C6 16.6495 6 17.3501 6 18.7502V23.5M16 6H8.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </template>
+            <template v-else>
+              <div class="save-spinner"></div>
+            </template>
           </button>
         </template>
       </div>
@@ -233,6 +238,7 @@ export default {
 
     const addingVideo = ref(false);
     const newVideo = ref('');
+    const isSaving = ref(false);
 
     const activeDropdownId = ref(null);
 
@@ -282,6 +288,9 @@ export default {
     };
 
     const saveCase = async () => {
+        if (isSaving.value) return;
+        isSaving.value = true;
+
         // Збираємо всі елементи
         const allItems = [];
         blocks.value.forEach(mainBlock => {
@@ -368,6 +377,8 @@ export default {
         } catch (error) {
             console.error('Error saving case:', error);
             M.toast({ html: 'Помилка збереження' });
+        } finally {
+            isSaving.value = false;
         }
     };
 
@@ -608,13 +619,29 @@ export default {
       clearForm,
       caseStatus,
       caseId,
-      clientId
+      clientId,
+      isSaving
     };
   }
 };
 </script>
 
 <style lang="scss" scoped>
+/* Spinner Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.save-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 .sv-case {
   padding: 20px 0 100px;
 
