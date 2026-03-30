@@ -1,39 +1,63 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>Telegram bot Kokh assistant</title>
-      <script src="https://telegram.org/js/telegram-web-app.js"></script>
-      <script>
-          // Telegram Mini App: request full-screen (max expanded) mode
-          (function () {
-              const tg = window.Telegram && window.Telegram.WebApp;
-              if (!tg) return;
 
-              // Inform Telegram the app is ready and request expanded view
-              tg.ready();
-              tg.expand();
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title>Telegram bot Kokh assistant</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    // Telegram Mini App: request full-screen (max expanded) mode
+    (function () {
+      const tg = window.Telegram && window.Telegram.WebApp;
+      if (!tg) return;
 
-              // Забороняє свайп-згортання міні-апки під час скролу
-              if (typeof tg.disableVerticalSwipes === "function") {
-                  tg.disableVerticalSwipes();
-              }
+      // Inform Telegram the app is ready and request expanded view
+      tg.ready();
+      tg.expand();
 
-              // новий механізм (реальний fullscreen), якщо підтримується
-              if (typeof tg.requestFullscreen === "function") {
-                  tg.requestFullscreen();
-              }
-          })();
-      </script>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+      // Забороняє свайп-згортання міні-апки під час скролу
+      if (typeof tg.disableVerticalSwipes === "function") {
+        tg.disableVerticalSwipes();
+      }
+
+      // Перевіряємо, чи це десктоп/ноутбук (не мобільна платформа)
+      const isDesktop = !['android', 'android_x', 'ios'].includes(tg.platform);
+
+      // новий механізм (реальний fullscreen), якщо підтримується
+      if (typeof tg.requestFullscreen === "function") {
+        if (!isDesktop) {
+          // На телефонах автоматично відкриваємо на весь екран
+          tg.requestFullscreen();
+        } else {
+          // На комп'ютерах (Windows, Mac) показуємо кнопку Налаштування (Settings)
+          // щоб користувач міг вручну вмикати/вимикати fullscreen (якщо підтримується)
+          if (tg.SettingsButton && typeof tg.SettingsButton.show === "function") {
+            tg.SettingsButton.show();
+          }
+
+          tg.onEvent('settingsButtonClicked', function () {
+            if (tg.isFullscreen && typeof tg.exitFullscreen === "function") {
+              tg.exitFullscreen();
+            } else {
+              tg.requestFullscreen();
+            }
+          });
+        }
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
 </html>
