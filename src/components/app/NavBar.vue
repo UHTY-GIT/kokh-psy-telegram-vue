@@ -11,6 +11,7 @@
     </div>
     <div class="logotype-psychology">
       <img src="@/assets/photo/favicon-5.png" alt="logotype">
+      <span class="logotype-text">PSY-CRM</span>
     </div>
   </div>
   <div class="error-messages" v-if="errors.length">
@@ -130,3 +131,19 @@ export default {
   }
 }
 </script>
+<style scoped>
+.logotype-text {
+    font-size: 12px;
+    margin: 5px 0 0 0;
+    font-weight: 600;
+    color: #ffffff;
+}
+.logotype-psychology {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.logotype-psychology img {
+    width: 25px;
+}
+</style>
