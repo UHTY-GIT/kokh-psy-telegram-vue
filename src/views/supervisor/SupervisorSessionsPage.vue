@@ -47,7 +47,7 @@
 <script>
 import { onMounted, ref } from "vue";
 import apiService from "@/services/apiService";
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 
 export default {
   name: "SupervisorSessionsPage",
@@ -66,7 +66,7 @@ export default {
         sessions.value = res?.data?.data ?? [];
       } catch (error) {
         console.error('Error fetching sessions:', error);
-        M.toast({ html: 'Помилка завантаження сесій' });
+        showToast('Помилка завантаження сесій');
         sessions.value = [];
       } finally {
         loading.value = false;

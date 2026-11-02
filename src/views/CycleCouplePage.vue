@@ -56,7 +56,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import apiService from "@/services/apiService";
-import M from "materialize-css";
+import { showToast } from '@/services/toastService';
 
 export default {
   name: "CycleCouple",
@@ -83,7 +83,7 @@ export default {
         }
       } catch (error) {
         if (error.response && error.response.status === 502) {
-          M.toast({ html: 'Помилка завантаження циклу пари' });
+          showToast('Помилка завантаження циклу пари');
         } else {
           console.error("Error fetching cycle couple data:", error);
           //errors.value.push("Помилка при завантаженні даних циклу пари");

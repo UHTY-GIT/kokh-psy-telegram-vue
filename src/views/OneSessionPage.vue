@@ -31,7 +31,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import apiService from '@/services/apiService';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 
 import aiTechnologyIcon from '@/assets/icons/ai-technology.png';
 import heartCoupleIcon from '@/assets/icons/heart-couple.png';
@@ -67,7 +67,7 @@ export default {
         typeClient.value = originType;
       } catch (error) {
         console.error('Error fetching consultation:', error);
-        M.toast({ html: 'Помилка завантаження консультації' });
+        showToast('Помилка завантаження консультації');
       } finally {
         loading.value = false;
       }

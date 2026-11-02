@@ -4,6 +4,9 @@ const AUTH_API_URL = 'https://assistant.psy-kokh.online/mini_app_auth/validate_i
 const TOKEN_KEY = 'authTelegramToken';
 const TOKEN_EXPIRY_KEY = 'authTelegramTokenExpiry';
 
+// Поточний запит авторизації: паралельні виклики чекають на нього, а не шлють свій
+let pendingLogin = null;
+
 const authService = {
     // Зберігає токен та час життя
     saveToken(token, expiresInSeconds = 14400) { // 4 hours default
@@ -33,8 +36,25 @@ const authService = {
         localStorage.removeItem(TOKEN_EXPIRY_KEY);
     },
 
-    // Основна функція валідації та отримання токена
-    async validateAndLogin() {
+    // Основна функція валідації та отримання токена (один запит на всіх, хто викликав одночасно)
+    validateAndLogin() {
+        if (!pendingLogin) {
+            pendingLogin = this.requestToken().finally(() => {
+                pendingLogin = null;
+            });
+        }
+        return pendingLogin;
+    },
+
+    // Дочекатися логіну, якщо він зараз іде, і повернути валідний токен
+    async waitForToken() {
+        if (pendingLogin) {
+            await pendingLogin;
+        }
+        return this.getToken();
+    },
+
+    async requestToken() {
         // --- DATA FOR DEBUGGING ---
         // Uncomment and paste your initData inside the string to debug
         const DEBUG_INIT_DATA = null;

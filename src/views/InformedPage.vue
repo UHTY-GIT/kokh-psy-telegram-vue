@@ -639,7 +639,7 @@ export default {
 }
 </script>
 
-<style type="scss">
+<style lang="scss">
 .single-text,
 .couple-text {
   margin: 25px 0 100px;

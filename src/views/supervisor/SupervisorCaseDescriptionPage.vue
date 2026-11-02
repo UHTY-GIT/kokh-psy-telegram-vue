@@ -35,6 +35,14 @@
             </div>
           </div>
 
+          <p
+              v-if="autosaveStatus"
+              class="sv-case__autosave"
+              :class="{ 'sv-case__autosave--error': autosaveIsError }"
+          >
+            {{ autosaveStatus }}
+          </p>
+
           <div v-for="(mainBlock, mIdx) in blocks" :key="mIdx" class="case-category">
              <h2 class="case-category__title">{{ mainBlock.mainTitle }}</h2>
              
@@ -69,6 +77,8 @@
                             v-for="block in subBlock.items"
                             :key="block.id"
                             class="case-block"
+                            :class="{ 'case-block--invalid': unsupportedCharsByItem[block.id] }"
+                            :data-item-id="block.id"
                         >
                             <div class="case-block__header">
                                 <h4 class="case-block__title">{{ block.title }}</h4>
@@ -140,6 +150,18 @@
                                         </li>
                                     </ul>
                                 </transition>
+                            </div>
+
+                            <!-- Емодзі, які бекенд не приймає -->
+                            <div v-if="unsupportedCharsByItem[block.id]" class="case-block__error" role="alert">
+                                <p class="case-block__error-text">
+                                    Сервер не приймає емодзі:
+                                    <span class="case-block__error-chars">{{ unsupportedCharsByItem[block.id].join(' ') }}</span>.
+                                    Приберіть їх, щоб зміни збереглися.
+                                </p>
+                                <button type="button" class="case-block__error-fix" @click="removeUnsupported(block)">
+                                    Прибрати
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -221,9 +243,23 @@
 </template>
 
 <script>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import apiService from '@/services/apiService';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
+import { createAutosave } from '@/utils/autosave';
+import { findUnsupportedChars, hasUnsupportedChars, removeUnsupportedChars } from '@/utils/textValidation';
+
+// Бекенд приймає ~10 збережень на хвилину, тому автозбереження не частіше ніж раз на 20 с
+const AUTOSAVE_DELAY = 3000;           // пауза після останнього введення
+const AUTOSAVE_MAX_WAIT = 30000;       // якщо друкують без пауз — все одно зберігаємо
+const AUTOSAVE_MIN_INTERVAL = 20000;
+const RETRY_DELAY = 30000;
+const RATE_LIMIT_RETRY_DELAY = 60000;
+
+const isRateLimited = (error) => error?.response?.status === 429;
+
+const UNSUPPORTED_CHARS_MESSAGE = 'Приберіть емодзі з полів, позначених червоним — сервер їх не приймає';
 
 export default {
   name: 'SupervisorCaseDescriptionPage',
@@ -242,6 +278,11 @@ export default {
 
     const activeDropdownId = ref(null);
 
+    const savedSnapshot = ref(null); // значення полів, які вже збережені на сервері
+    const answerIdsStale = ref(false); // нові відповіді створені, але їхні id ще не підтягнуті
+    const autosaveError = ref(null);
+    const hasSavedInSession = ref(false);
+
     const formatDate = (isoStr) => {
         if (!isoStr) return null;
         try {
@@ -253,6 +294,47 @@ export default {
         } catch (e) {
             console.error("Date formatting error", e);
             return null;
+        }
+    };
+
+    const getAllItems = () => blocks.value.flatMap(mainBlock =>
+        mainBlock.subcategories.flatMap(subBlock => subBlock.items)
+    );
+
+    // Знімок лише значень полів (без стану спойлерів), щоб бачити реальні зміни
+    const takeSnapshot = () => JSON.stringify(getAllItems().map(item => [item.id, item.value || '']));
+    const currentSnapshot = computed(takeSnapshot);
+    const isDirty = computed(() => savedSnapshot.value !== null && currentSnapshot.value !== savedSnapshot.value);
+
+    // Поля з емодзі, які бекенд не збереже: { [id поля]: ['😀', ...] }
+    const unsupportedCharsByItem = computed(() => {
+        const result = {};
+        getAllItems().forEach(item => {
+            const chars = findUnsupportedChars(item.value);
+            if (chars.length) result[item.id] = chars;
+        });
+        return result;
+    });
+    const hasUnsupportedInput = computed(() => Object.keys(unsupportedCharsByItem.value).length > 0);
+
+    const removeUnsupported = (block) => {
+        block.value = removeUnsupportedChars(block.value);
+    };
+
+    // Розгорнути спойлер з першим полем, де є емодзі, і прокрутити до нього
+    const revealFirstUnsupported = () => {
+        for (const mainBlock of blocks.value) {
+            for (const subBlock of mainBlock.subcategories) {
+                const item = subBlock.items.find(i => unsupportedCharsByItem.value[i.id]);
+                if (!item) continue;
+
+                if (subBlock.subTitle && !subBlock.isOpen) toggleSubcategory(subBlock);
+                setTimeout(() => {
+                    document.querySelector(`[data-item-id="${item.id}"]`)
+                        ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }, 320);
+                return;
+            }
         }
     };
 
@@ -287,104 +369,231 @@ export default {
         activeDropdownId.value = null;
     };
 
-    const saveCase = async () => {
-        if (isSaving.value) return;
-        isSaving.value = true;
+    // Підтвердження через Telegram, з фолбеком на браузер.
+    // Пріоритет: showPopup (v6.2+) -> showConfirm (v6.0+) -> window.confirm (Browser/Legacy)
+    const askConfirm = (title, message, confirmText) => new Promise((resolve) => {
+        const tg = window.Telegram?.WebApp;
 
-        // Збираємо всі елементи
-        const allItems = [];
-        blocks.value.forEach(mainBlock => {
-            mainBlock.subcategories.forEach(subBlock => {
-                subBlock.items.forEach(item => {
-                    allItems.push(item);
-                });
-            });
+        if (tg?.showPopup) {
+            try {
+                tg.showPopup({
+                    title,
+                    message,
+                    buttons: [
+                        {id: 'confirm', type: 'destructive', text: confirmText},
+                        {id: 'cancel', type: 'cancel'}
+                    ]
+                }, (buttonId) => resolve(buttonId === 'confirm'));
+                return;
+            } catch (e) {
+                console.warn('Telegram WebApp showPopup failed:', e);
+            }
+        }
+
+        if (tg?.showConfirm) {
+            try {
+                tg.showConfirm(message, (confirmed) => resolve(confirmed));
+                return;
+            } catch (e) {
+                console.warn('Telegram WebApp showConfirm failed:', e);
+            }
+        }
+
+        resolve(confirm(message));
+    });
+
+    const applyCaseMeta = (data) => {
+        lastUpdated.value = formatDate(data.updated_at);
+        caseId.value = data.id;
+        caseStatus.value = data.status; // 'draft' or 'filled'
+
+        if (data.client && data.client.id) {
+            clientId.value = data.client.id;
+        }
+    };
+
+    // Тихе оновлення після збереження: підтягуємо id відповідей і статус,
+    // не перебудовуючи форму (спойлери, скрол і введений текст лишаються як є)
+    const refreshAnswerIds = async () => {
+        const response = await apiService.getCaseDescription();
+        const data = response.data.data;
+        if (!data) throw new Error('Case description not found');
+
+        applyCaseMeta(data);
+
+        const answerIdByItem = new Map();
+        (data.answers || []).forEach(answer => {
+            if (!answerIdByItem.has(answer.form_item_id)) {
+                answerIdByItem.set(answer.form_item_id, answer.id);
+            }
         });
 
-        try {
-            if (caseStatus.value === 'draft') {
-                const answersData = allItems.map(item => ({
-                    form_item_id: item.id,
-                    text_answer: item.value || ''
-                }));
+        getAllItems().forEach(item => {
+            if (answerIdByItem.has(item.id)) {
+                item.answerId = answerIdByItem.get(item.id);
+            }
+        });
+        answerIdsStale.value = false;
+    };
 
+    // Одне збереження форми. Кидає помилку, якщо не вдалося.
+    const persistAnswers = async () => {
+        // Бекенд відхилить такий текст — не витрачаємо запит із ліміту
+        if (hasUnsupportedInput.value) {
+            throw new Error('Unsupported characters in case answers');
+        }
+
+        isSaving.value = true;
+        try {
+            // Поки не знаємо id щойно створених відповідей, не можна зберігати знову — інакше вони задублюються
+            if (answerIdsStale.value) {
+                await refreshAnswerIds();
+            }
+
+            const snapshot = takeSnapshot();
+            const allItems = getAllItems();
+
+            if (caseStatus.value === 'draft') {
                 const payload = {
                     client_id: clientId.value,
                     answerable_id: caseId.value,
                     answerable_type: 'CaseDescription',
-                    answers_data: answersData
+                    answers_data: allItems.map(item => ({
+                        form_item_id: item.id,
+                        text_answer: item.value || ''
+                    }))
                 };
 
                 await apiService.saveCaseAnswers(payload);
-                M.toast({ html: 'Чернетка збережена' });
-                 // завантаження свіжих даних
-                await fetchCaseDescription(); 
+                answerIdsStale.value = true;
+                await refreshAnswerIds();
 
             } else if (caseStatus.value === 'filled') {
-                // 1. Визначити нові відповіді (наявне значення, але немає answerId)
-                const newItems = allItems.filter(item => 
+                // Нові відповіді (є значення, але немає answerId)
+                const newItems = allItems.filter(item =>
                     item.answerId === null && item.value && item.value.trim() !== ''
                 );
 
-                // 2. Визначити існуючі відповіді (наявний answerId)
-                // надсилаємо їх, навіть якщо вони порожні, щоб дозволити очищення значень
+                // Існуючі (є answerId) надсилаємо, навіть якщо вони порожні, щоб дозволити очищення значень
                 const existingItems = allItems.filter(item => item.answerId !== null);
 
-                let savedNew = false;
-                let updatedOld = false;
+                // Спершу оновлення існуючих: його безпечно повторювати після помилки
+                if (existingItems.length > 0) {
+                    await apiService.updateCaseAnswers({
+                        client_id: clientId.value,
+                        answers_data: existingItems.map(item => ({
+                            id: item.answerId,
+                            text_answer: item.value || ''
+                        }))
+                    });
+                }
 
-                // --- А. Зберегти нові елементи, якщо є ---
+                // Потім створення нових і одразу підтягуємо їхні id
                 if (newItems.length > 0) {
-                     const newAnswersData = newItems.map(item => ({
-                        form_item_id: item.id,
-                        text_answer: item.value
-                    }));
-
-                    const savePayload = {
+                    await apiService.saveCaseAnswers({
                         client_id: clientId.value,
                         answerable_id: caseId.value,
                         answerable_type: 'CaseDescription',
-                        answers_data: newAnswersData
-                    };
-
-                    await apiService.saveCaseAnswers(savePayload);
-                    savedNew = true;
-                }
-
-                // --- Б. Оновити існуючі елементи, якщо є ---
-                if (existingItems.length > 0) {
-                     const updateAnswersData = existingItems.map(item => ({
-                        id: item.answerId,
-                        text_answer: item.value || ''
-                    }));
-                
-                    const updatePayload = {
-                        client_id: clientId.value,
-                        answers_data: updateAnswersData
-                    };
-
-                    await apiService.updateCaseAnswers(updatePayload);
-                    updatedOld = true;
-                }
-
-                if (savedNew || updatedOld) {
-                    M.toast({ html: 'Зміни збережено' });
-                    await fetchCaseDescription();
+                        answers_data: newItems.map(item => ({
+                            form_item_id: item.id,
+                            text_answer: item.value
+                        }))
+                    });
+                    answerIdsStale.value = true;
+                    await refreshAnswerIds();
                 } else {
-                     M.toast({ html: 'Немає змін для збереження' });
+                    lastUpdated.value = formatDate(new Date());
                 }
+            } else {
+                throw new Error(`Unknown case status: ${caseStatus.value}`);
             }
-        } catch (error) {
-            console.error('Error saving case:', error);
-            M.toast({ html: 'Помилка збереження' });
+
+            savedSnapshot.value = snapshot;
+            hasSavedInSession.value = true;
+            autosaveError.value = null;
         } finally {
             isSaving.value = false;
         }
     };
 
+    const autosave = createAutosave({
+        save: persistAnswers,
+        isDirty: () => isDirty.value,
+        delay: AUTOSAVE_DELAY,
+        maxWait: AUTOSAVE_MAX_WAIT,
+        minInterval: AUTOSAVE_MIN_INTERVAL,
+        retryDelay: (error) => isRateLimited(error) ? RATE_LIMIT_RETRY_DELAY : RETRY_DELAY,
+        onError: (error) => {
+            console.error('Error autosaving case:', error);
+            autosaveError.value = error;
+        },
+    });
+
+    watch(currentSnapshot, () => {
+        // Поки в тексті є емодзі, не зберігаємо: людина бачить помилку біля поля
+        if (hasUnsupportedInput.value) autosave.cancel();
+        else if (isDirty.value) autosave.schedule();
+    });
+
+    // Поки є незбережені зміни, Telegram перепитає перед закриттям міні-апки
+    const setClosingConfirmation = (enabled) => {
+        const tg = window.Telegram?.WebApp;
+        try {
+            if (enabled) tg?.enableClosingConfirmation?.();
+            else tg?.disableClosingConfirmation?.();
+        } catch (e) {
+            console.warn('Telegram WebApp closing confirmation failed:', e);
+        }
+    };
+    watch(isDirty, setClosingConfirmation);
+
+    // Міні-апку згорнули або закривають — зберігаємо, не чекаючи таймера
+    const onVisibilityChange = () => {
+        if (document.visibilityState === 'hidden' && isDirty.value && !hasUnsupportedInput.value) {
+            autosave.flush().catch(() => {});
+        }
+    };
+
+    const autosaveStatus = computed(() => {
+        if (isSaving.value) return 'Зберігаємо…';
+        if (hasUnsupportedInput.value) return `Не збережено. ${UNSUPPORTED_CHARS_MESSAGE}`;
+        if (autosaveError.value) {
+            return isRateLimited(autosaveError.value)
+                ? 'Забагато збережень — повторимо за хвилину'
+                : 'Не вдалося зберегти — спробуємо ще раз';
+        }
+        if (isDirty.value) return 'Є незбережені зміни — збережемо автоматично';
+        if (hasSavedInSession.value) return 'Усі зміни збережено';
+        return '';
+    });
+    const autosaveIsError = computed(() => !isSaving.value && (hasUnsupportedInput.value || autosaveError.value !== null));
+
+    const saveCase = async () => {
+        if (hasUnsupportedInput.value) {
+            showToast(UNSUPPORTED_CHARS_MESSAGE);
+            revealFirstUnsupported();
+            return;
+        }
+
+        if (!isDirty.value && !autosave.isSaving()) {
+            showToast('Немає змін для збереження');
+            return;
+        }
+
+        const wasDraft = caseStatus.value === 'draft';
+        try {
+            await autosave.flush();
+            showToast(wasDraft ? 'Чернетка збережена' : 'Зміни збережено');
+        } catch (error) {
+            console.error('Error saving case:', error);
+            showToast(isRateLimited(error)
+                ? 'Ліміт збережень перевищено. Спробуйте за хвилину.'
+                : 'Помилка збереження');
+        }
+    };
+
     const fetchVideos = async () => {
        try {
-        //const telegramID = 831595963;
         const response = await apiService.getClientAssets();
         // перевірка на масив або об'єкт, якщо бекенд змінюється
         videos.value = Array.isArray(response.data) ? response.data : (response.data.data || []);
@@ -395,13 +604,17 @@ export default {
 
     const confirmVideo = async () => {
       if (!newVideo.value) return;
-      
+
       const link = newVideo.value;
+      if (hasUnsupportedChars(link)) {
+        showToast('У посиланні є емодзі або спецсимволи, які сервер не приймає');
+        return;
+      }
       const type = detectSourceType(link);
-      const title = type === 'you_tube' 
-        ? 'Відео сесії (YouTube)' 
-        : type === 'google_drive' 
-          ? 'Відео сесії (Google Drive)' 
+      const title = type === 'you_tube'
+        ? 'Відео сесії (YouTube)'
+        : type === 'google_drive'
+          ? 'Відео сесії (Google Drive)'
           : 'Відео сесії';
 
       const payload = {
@@ -411,25 +624,23 @@ export default {
       };
 
       try {
-        //const telegramID = 831595963;
         await apiService.createClientAsset(payload);
         await fetchVideos(); // оновлення списку
         newVideo.value = '';
         addingVideo.value = false;
       } catch (error) {
         console.error('Error creating video asset:', error);
-        M.toast({ html: 'Помилка збереження посилання' });
+        showToast('Помилка збереження посилання');
       }
     };
 
     const removeVideo = async (id) => {
         try {
-            //const telegramID = 831595963;
             await apiService.deleteClientAsset(id);
             videos.value = videos.value.filter(v => v.id !== id);
         } catch (error) {
              console.error('Error deleting video asset:', error);
-             M.toast({ html: 'Помилка видалення' });
+             showToast('Помилка видалення');
         }
     };
 
@@ -440,78 +651,73 @@ export default {
       return 'other';
     };
 
-    const clearForm = () => {
-        const confirmAction = (confirmed) => {
-            if (confirmed) {
-                blocks.value.forEach(mainBlock => {
-                    mainBlock.subcategories.forEach(subBlock => {
-                         subBlock.items.forEach(item => {
-                             if(item.type === 'text' || item.type === 'string' || item.type === 'select_v2') {
-                                 item.value = '';
-                                 // Ми залишаємо answerId, щоб при збереженні оновити існуючу відповідь на порожню?
-                                 // насправді, "очищення форми для нових даних" зазвичай означає, що ми хочемо розглядати це як новий запис?
-                                 // але в описі сказано "форма (введення, текстове поле, вибір) може бути очищена для введення нових даних". 
-                                 // Там не сказано "видалити старі дані". 
-                                 // Однак, `caseStatus === 'filled'` означає, що ми редагуємо існуючий набір відповідей.
-                                 // Якщо користувач очищає і зберігає, бекенд `updateCaseAnswers` ймовірно отримає порожні рядки.
-                                 // Якщо мета - "ввести нові дані" в *ту ж* структуру справи, це правильно.
-                             }
-                         });
-                    });
-                });
-                M.toast({ html: 'Форма очищена' });
+    const clearForm = async () => {
+        const confirmed = await askConfirm(
+            'Очищення форми',
+            'Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.',
+            'Очистити'
+        );
+        if (!confirmed) return;
+
+        getAllItems().forEach(item => {
+            if (item.type === 'text' || item.type === 'string' || item.type === 'select_v2') {
+                // answerId лишаємо: при збереженні існуючі відповіді оновляться на порожні
+                item.value = '';
             }
-        };
-
-        // перевірка наявності Telegram WebApp
-        // Пріоритет: showPopup (v6.2+) -> showConfirm (v6.0+) -> window.confirm (Browser/Legacy)
-        
-        let handled = false;
-
-        // спроба використати showPopup (v6.2+)
-        // перевірка наявності методу
-        if (window.Telegram?.WebApp?.showPopup) {
-            try {
-                window.Telegram.WebApp.showPopup({
-                    title: 'Очищення форми',
-                    message: 'Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.',
-                    buttons: [
-                        {id: 'delete', type: 'destructive', text: 'Очистити'},
-                        {id: 'cancel', type: 'cancel'}
-                    ]
-                }, (buttonId) => {
-                    if (buttonId === 'delete') {
-                        confirmAction(true);
-                    } else {
-                        confirmAction(false); // Скасовано
-                    }
-                });
-                handled = true;
-            } catch (e) {
-                console.warn('Telegram WebApp showPopup failed:', e);
-                // перехід до наступного методу
-                handled = false;
-            }
-        }
-
-        // спроба використати showConfirm (v6.0), якщо showPopup не вдалося або недоступний
-        if (!handled && window.Telegram?.WebApp?.showConfirm) {
-             try {
-                 window.Telegram.WebApp.showConfirm("Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.", confirmAction);
-                 handled = true;
-            } catch (e) {
-                console.warn('Telegram WebApp showConfirm failed:', e);
-                handled = false;
-            }
-        }
-
-        // використання стандартного confirm браузера, якщо Telegram WebApp не вдалося або недоступний
-        if (!handled) {
-            const result = confirm("Ви впевнені, що хочете очистити форму? Всі введені дані буде стерто.");
-            confirmAction(result);
-        }
+        });
+        showToast('Форма очищена');
     };
 
+    const buildBlocks = (data) => {
+        // Grouping Logic
+        const grouped = {};
+
+        // Sort or just iterate - order in array usually matters
+        data.custom_form.form_items.forEach(item => {
+            const mainCat = item.form_item_main_category_title || 'General';
+            const childCat = item.form_item_child_category_title || '';
+
+            if (!grouped[mainCat]) {
+                grouped[mainCat] = {};
+            }
+            if (!grouped[mainCat][childCat]) {
+                grouped[mainCat][childCat] = [];
+            }
+
+            // Find answer
+            const answer = (data.answers || []).find(a => a.form_item_id === item.id);
+
+            // Map item
+            grouped[mainCat][childCat].push({
+                id: item.id, // form_item_id
+                answerId: answer ? answer.id : null, // answer_id (for updates)
+                title: item.field_name,
+                type: item.field_type, // 'text', 'string', 'select_v2'
+                helpText: item.help_text,
+                value: answer ? answer.text_answer : '',
+                options: item.variants || []
+            });
+        });
+
+        // Convert to array structure for easier iteration in template
+        return Object.keys(grouped).map(mainTitle => {
+            const subCats = grouped[mainTitle];
+            const subcategories = Object.keys(subCats).map(subTitle => {
+                return {
+                    subTitle: subTitle,
+                    isOpen: false,
+                    isFullyOpen: false,
+                    items: subCats[subTitle]
+                };
+            });
+            return {
+                mainTitle,
+                subcategories
+            };
+        });
+    };
+
+    // Перше завантаження сторінки (зі спінером)
     const fetchCaseDescription = async () => {
       loading.value = true;
       try {
@@ -520,65 +726,12 @@ export default {
                  const response = await apiService.getCaseDescription();
                  const data = response.data.data;
                  if (data) {
-                    lastUpdated.value = formatDate(data.updated_at);
-                    caseId.value = data.id;
-                    caseStatus.value = data.status; // 'draft' or 'filled'
-                    
-                    if (data.client && data.client.id) {
-                        clientId.value = data.client.id;
+                    applyCaseMeta(data);
+
+                    if (data.custom_form && data.custom_form.form_items) {
+                        blocks.value = buildBlocks(data);
                     }
-
-                     if (data.custom_form && data.custom_form.form_items) {
-                        
-                        // Grouping Logic
-                        const grouped = {};
-                        
-                        // Sort or just iterate - order in array usually matters
-                        data.custom_form.form_items.forEach(item => {
-                            const mainCat = item.form_item_main_category_title || 'General';
-                            const childCat = item.form_item_child_category_title || '';
-
-                            if (!grouped[mainCat]) {
-                                grouped[mainCat] = {};
-                            }
-                            if (!grouped[mainCat][childCat]) {
-                                grouped[mainCat][childCat] = [];
-                            }
-
-                            // Find answer
-                            const answer = (data.answers || []).find(a => a.form_item_id === item.id);
-                            
-                            // Map item
-                            grouped[mainCat][childCat].push({
-                                id: item.id, // form_item_id
-                                answerId: answer ? answer.id : null, // answer_id (for updates)
-                                title: item.field_name,
-                                type: item.field_type, // 'text', 'string', 'select_v2'
-                                helpText: item.help_text,
-                                value: answer ? answer.text_answer : '',
-                                options: item.variants || []
-                            });
-                        });
-
-                        // Convert to array structure for easier iteration in template
-                        const resultingBlocks = Object.keys(grouped).map(mainTitle => {
-                            const subCats = grouped[mainTitle];
-                            const subcategories = Object.keys(subCats).map(subTitle => {
-                                return {
-                                    subTitle: subTitle,
-                                    isOpen: false,
-                                    isFullyOpen: false,
-                                    items: subCats[subTitle]
-                                };
-                            });
-                            return {
-                                mainTitle,
-                                subcategories
-                            };
-                        });
-                        
-                        blocks.value = resultingBlocks;
-                     }
+                    savedSnapshot.value = takeSnapshot();
                  }
              })(),
              fetchVideos()
@@ -586,19 +739,48 @@ export default {
 
       } catch (error) {
         console.error('Error fetching data:', error);
-        M.toast({ html: 'Помилка завантаження даних' });
+        showToast('Помилка завантаження даних');
       } finally {
         loading.value = false;
       }
     };
 
+    // Перехід на іншу сторінку: спершу дозберігаємо зміни
+    onBeforeRouteLeave(async () => {
+        if (!isDirty.value && !autosave.isSaving()) return true;
+
+        if (hasUnsupportedInput.value) {
+            const chars = [...new Set(Object.values(unsupportedCharsByItem.value).flat())].join(' ');
+            return askConfirm(
+                'Зміни не збережено',
+                `У тексті є емодзі, які сервер не приймає (${chars}), тому зміни не збережено. Все одно вийти? Незбережений текст буде втрачено.`,
+                'Вийти'
+            );
+        }
+
+        try {
+            await autosave.flush();
+            return true;
+        } catch (error) {
+            return askConfirm(
+                'Зміни не збережено',
+                'Не вдалося зберегти зміни. Все одно вийти? Незбережений текст буде втрачено.',
+                'Вийти'
+            );
+        }
+    });
+
     onMounted(() => {
       fetchCaseDescription();
       document.addEventListener('click', closeAllDropdowns);
+      document.addEventListener('visibilitychange', onVisibilityChange);
     });
 
     onBeforeUnmount(() => {
+        autosave.cancel();
+        setClosingConfirmation(false);
         document.removeEventListener('click', closeAllDropdowns);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
     });
 
     return {
@@ -620,7 +802,11 @@ export default {
       caseStatus,
       caseId,
       clientId,
-      isSaving
+      isSaving,
+      autosaveStatus,
+      autosaveIsError,
+      unsupportedCharsByItem,
+      removeUnsupported
     };
   }
 };
@@ -668,6 +854,18 @@ export default {
       color: #fff;
       padding: 3px 9px;
       border-radius: 50px;
+    }
+  }
+
+  &__autosave {
+    margin: -10px 0 25px;
+    color: #494b55;
+    opacity: 0.8;
+    font: 500 14px / 1.2 "Nunito", system-ui, sans-serif;
+
+    &--error {
+      color: #c0392b;
+      opacity: 1;
     }
   }
 }
@@ -872,6 +1070,47 @@ export default {
   &__textarea {
       min-height: 120px;
       resize: vertical;
+  }
+
+  /* Поле з емодзі, які бекенд не приймає */
+  &--invalid &__textarea,
+  &--invalid &__input {
+      &, &:focus {
+          border-color: #c0392b;
+      }
+  }
+
+  &__error {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(192, 57, 43, 0.1);
+      color: #c0392b;
+      font: 600 14px / 1.3 "Nunito", system-ui, sans-serif;
+
+      &-text {
+          margin: 0;
+      }
+
+      &-chars {
+          font-size: 16px;
+          letter-spacing: 2px;
+      }
+
+      &-fix {
+          flex: 0 0 auto;
+          padding: 7px 12px;
+          border: none;
+          border-radius: 8px;
+          background: #c0392b;
+          color: #fff;
+          font: 600 14px / 1.2 "Nunito", system-ui, sans-serif;
+          cursor: pointer;
+      }
   }
 
   /* Custom Select Styles */

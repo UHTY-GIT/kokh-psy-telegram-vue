@@ -43,7 +43,7 @@
 <script>
 import { onMounted, ref } from 'vue';
 import apiService from "@/services/apiService";
-//import M from 'materialize-css';
+//import { showToast } from '@/services/toastService';
 
 export default {
   name: 'SupervisorFeedbackDetailsPage',
@@ -63,7 +63,7 @@ export default {
          assessments.value = response?.data?.data ?? [];
        } catch (error) {
          console.error('Error fetching supervisor feedback:', error);
-         //M.toast({ html: 'Помилка завантаження фідбеку' });
+         //showToast('Помилка завантаження фідбеку');
        } finally {
          loading.value = false;
        }

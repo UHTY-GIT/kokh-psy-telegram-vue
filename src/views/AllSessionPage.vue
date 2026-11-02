@@ -40,7 +40,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 
 export default {
   name: 'AllSessionClient',
@@ -65,7 +65,7 @@ export default {
         sessions.value = response.data.data;
       } catch (error) {
         console.error('Error fetching sessions:', error);
-        M.toast({ html: 'Помилка завантаження сесій' });
+        showToast('Помилка завантаження сесій');
       } finally {
         loading.value = false;
       }

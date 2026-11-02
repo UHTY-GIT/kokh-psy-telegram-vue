@@ -11,9 +11,9 @@ const apiClient = axios.create({
 // Request Interceptor: Додавання токена до кожного запиту
 apiClient.interceptors.request.use(
     async (config) => {
-        // Пропускаємо додавання токена для запитів авторизації, щоб уникнути циклів, 
-        // хоча authService використовує окремий axios виклик.
-        const token = authService.getToken();
+        // Якщо логін ще триває (старт міні-апки) — чекаємо на нього, щоб не слати запит без токена.
+        // authService використовує окремий axios виклик, тому циклу тут немає.
+        const token = await authService.waitForToken();
         if (token) {
             config.headers['authTelegramToken'] = token;
         }

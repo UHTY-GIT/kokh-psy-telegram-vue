@@ -1,24 +1,97 @@
-# kokh-assistant-vue-telegram
+# PSY-CRM — Telegram Mini App
 
-## Project setup
-```
+Кабінет клієнта та супервізанта PSY-CRM, який відкривається всередині Telegram як Mini App.
+Дані приходять з бекенду `https://assistant.psy-kokh.online`.
+
+## Ролі
+
+Роль визначається полем `origin_type` з профілю (`/api/v1/customer/consultations/client_profile`).
+NavBar зберігає його в `localStorage`, а сторінки, меню та router guard читають його звідти.
+
+| `origin_type`                          | Кабінет      | Що доступно                                                        |
+|----------------------------------------|--------------|--------------------------------------------------------------------|
+| `individual`                           | Індивідуальний | сесії, статистика (шкала Klein), дайджест, згода, оцінка експерта |
+| `couple_classic`, `couple_diagnostic`  | Пара         | сесії, статистика, цикл пари, згода, оцінка експерта               |
+| `individual_supervision`               | Супервізант  | кабінет, сесії, фідбек і карта навичок EFCT, матеріали (PDF), опис кейсу |
+| немає                                  | —            | заглушка «запишіться на першу консультацію»                        |
+
+## Стек
+
+Vue 3 · Vue CLI 5 · vue-router 4 · Vuex 4 · axios · Chart.js 3 (`vue-chart-3`) · SCSS · PWA (service worker у production).
+
+## Команди
+
+```bash
 npm install
+npm run serve            # дев-сервер на http://localhost:80
+npm run build            # збірка в dist/
+npm test                 # unit-тести (вбудований node:test, Node 22+)
+npx vue-cli-service lint --no-fix   # перевірка ESLint без змін у файлах
 ```
 
-### Compiles and hot-reloads for development
+`npm run lint` не лише перевіряє, а й **автоматично виправляє** файли.
+
+## Структура
+
 ```
-npm run serve
+public/index.html            Telegram WebApp SDK, ready/expand, fullscreen і кнопка Settings на десктопі
+src/main.js                  старт: логін через Telegram + монтування застосунку
+src/router/index.js          маршрути та редірект за роллю
+src/services/authService.js  обмін initData на JWT, кеш токена в localStorage
+src/services/apiService.js   axios з токеном у заголовку authTelegramToken, повтор після 401/403
+src/services/toastService.js тостові сповіщення (стилі .toast у assets/style.css)
+src/utils/autosave.js        планувальник автозбереження форми кейсу
+src/composables/             визначення десктоп/мобільної платформи
+src/layouts/MainLayout.vue   NavBar + сторінка + SideBar
+src/components/app/          NavBar (профіль, debug mode), SideBar (меню за роллю)
+src/components/graphic/      лінійний графік статистики, радар навичок EFCT
+src/views/                   сторінки клієнта
+src/views/supervisor/        сторінки супервізанта
+tests/                       unit-тести
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Авторизація
 
-### Lints and fixes files
-```
-npm run lint
-```
+1. При кожному запуску `main.js` викликає `authService.validateAndLogin()`: він надсилає
+   `Telegram.WebApp.initData` на `/mini_app_auth/validate_init_data` і зберігає JWT на 4 години.
+2. Кожен запит через `apiService` спершу чекає завершення цього логіну, тож без токена нічого не піде.
+3. Якщо сервер відповів 401/403, робимо повторний логін і повторюємо запит. Одночасні запити
+   використовують той самий логін, а не запускають кожен свій.
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Щоб налагоджувати поза Telegram, вставте свій `initData` у `DEBUG_INIT_DATA` в `authService.js`.
+
+## Debug mode
+
+10 натискань на ім'я в NavBar вмикають debug mode. Тоді на головній і в кабінеті супервізанта
+видно сирі `initData` та `initDataUnsafe`.
+
+## Опис кейсу: автозбереження
+
+Форма `SupervisorCaseDescriptionPage.vue` зберігається сама, враховуючи ліміт бекенду
+(~10 збережень на хвилину):
+
+- збереження через 3 с після паузи в набиранні, а якщо друкують без пауз — не пізніше ніж через 30 с;
+- між збереженнями проходить щонайменше 20 с;
+- після помилки повтор через 30 с, після `429` — через 60 с;
+- при переході на іншу сторінку зміни спершу дозберігаються. Якщо не вийшло, з'являється запит, чи все одно вийти;
+- якщо міні-апку згортають, зміни зберігаються одразу, а поки є незбережене, Telegram перепитує перед закриттям;
+- після збереження форма не перезавантажується: спойлери, скрол і введений текст лишаються на місці.
+
+Кнопка збереження зберігає одразу, без очікування.
+
+### Емодзі та недопустимі символи
+
+Бекенд (MySQL `utf8`) не зберігає 4-байтові символи UTF-8 — майже всі емодзі (😀, 🫪, 🇺🇦)
+і відповідає помилкою `Incorrect string value '\xF0\x9F...'`. Тому `src/utils/textValidation.js`
+перевіряє текст ще до відправки:
+
+- поле з таким символом підсвічується червоним, під ним видно, які саме символи заважають, і є кнопка «Прибрати»;
+- поки такі символи є, форма не зберігається і не витрачає запити з ліміту. Кнопка збереження розгортає потрібний спойлер і прокручує до поля;
+- 3-байтові символи (❤ ✅ ☺ ★), українські літери й типографіку (« » — ʼ № ₴ €) сервер приймає, тож їх не чіпаємо.
+
+## Деплой
+
+`node_modules/` і `dist/` навмисно лежать у git: на сервері залежності не встановлюються.
+Після змін у коді перезберіть `dist/` (`npm run build`) і закомітьте його разом зі змінами.
+
+Ціни та тексти інформованої згоди захардкоджені в `src/views/InformedPage.vue`.

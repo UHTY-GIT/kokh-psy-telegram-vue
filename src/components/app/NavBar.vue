@@ -27,7 +27,7 @@ import apiService from '@/services/apiService';
 import defaultUserPhoto from '@/assets/icons/emoji.iamrohit.png';
 import { useTelegramPlatform } from '@/composables/useTelegramPlatform';
 import { useStore } from 'vuex';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 
 export default {
   name: 'NavBar',
@@ -54,11 +54,7 @@ export default {
         return;
       }
 
-      // Init auth (get token)
-      await import('@/services/authService').then(module => {
-         module.default.validateAndLogin();
-      });
-
+      // Логін запускається в main.js, а fetchUserProfile дочекається токена через interceptor
       const initData = tg.initDataUnsafe;
 
       if (!initData) {
@@ -107,7 +103,7 @@ export default {
       clickCount.value++;
       if (clickCount.value === 10) {
         store.commit('SET_DEBUG_MODE', true);
-        M.toast({html: 'Debug Mode Enabled 🐞'});
+        showToast('Debug Mode Enabled 🐞');
         clickCount.value = 0; // Reset or keep it? Requirement says "if user presses ... 10 times". Resetting allows re-trigger if needed, or prevents spam.
       }
     };

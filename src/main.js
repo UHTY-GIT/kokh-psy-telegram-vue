@@ -6,7 +6,8 @@ import store from './store'
 
 import authService from '@/services/authService';
 
-// Initial auth check
-authService.ensureAuth();
+// Свіжий логін при кожному запуску: initData визначає поточного користувача Telegram.
+// Запити до API самі дочекаються цього логіну (див. interceptor в apiService).
+authService.validateAndLogin();
 
 createApp(App).use(store).use(router).mount('#app')

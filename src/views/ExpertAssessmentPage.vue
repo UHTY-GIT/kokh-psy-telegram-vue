@@ -50,7 +50,7 @@
 
 <script>
 import apiService from "@/services/apiService";
-//import M from "materialize-css";
+//import { showToast } from '@/services/toastService';
 import { ref, onMounted } from "vue";
 
 export default {
@@ -69,7 +69,7 @@ export default {
         assessments.value = response?.data?.data ?? [];
       } catch (error) {
         console.error('Error fetching expert assessments:', error);
-        //M.toast({ html: 'Помилка при завантаженні даних оцінки експерта' });
+        //showToast('Помилка при завантаженні даних оцінки експерта');
       }
     };
 

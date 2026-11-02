@@ -93,7 +93,7 @@ import { onMounted, ref } from 'vue';
 import RadarChartSupervisor from '@/components/graphic/RadarChartSupervisor.vue';
 import arrowRightIcon from '@/assets/icons/arrow-rigth-butt.svg';
 import apiService from '@/services/apiService';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 
 export default {
   name: 'SupervisorFeedbackPage',
@@ -168,7 +168,7 @@ export default {
 
         } catch (error) {
             console.error('Error fetching skills:', error);
-            M.toast({ html: 'Помилка завантаження даних графіка' });
+            showToast('Помилка завантаження даних графіка');
         } finally {
             loading.value = false;
         }

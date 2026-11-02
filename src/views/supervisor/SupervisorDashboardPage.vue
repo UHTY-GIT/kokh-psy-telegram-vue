@@ -90,7 +90,7 @@
 import { onBeforeUnmount, onMounted, ref, computed } from 'vue';
 import arrowButt from '@/assets/icons/arrow-rigth-butt.svg'
 import apiService from '@/services/apiService';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 import { useStore } from 'vuex';
 
 export default {
@@ -166,7 +166,7 @@ export default {
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        M.toast({ html: 'Помилка завантаження даних' });
+        showToast('Помилка завантаження даних');
       } finally {
         loading.value = false;
         if (growthIndex.value > 0) {

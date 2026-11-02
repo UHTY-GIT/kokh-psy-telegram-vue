@@ -62,7 +62,7 @@
 import { computed, onMounted, ref } from 'vue';
 import downloadIcon from '@/assets/icons/download-files-icon.svg';
 import apiService, { BASE_URL } from '@/services/apiService';
-import M from 'materialize-css';
+import { showToast } from '@/services/toastService';
 
 export default {
   name: 'SupervisorMaterialsPage',
@@ -128,9 +128,9 @@ export default {
         console.error('Error downloading document:', error);
         
         if (error.response && error.response.status === 429) {
-             M.toast({ html: 'Ліміт запитів перевищено. Будь ласка, спробуйте пізніше.' });
+             showToast('Ліміт запитів перевищено. Будь ласка, спробуйте пізніше.');
         } else {
-             M.toast({ html: 'Помилка завантаження файлу' });
+             showToast('Помилка завантаження файлу');
         }
       } finally {
         downloadingItemKey.value = null;
