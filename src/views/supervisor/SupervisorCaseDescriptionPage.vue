@@ -155,9 +155,7 @@
                             <!-- Емодзі, які бекенд не приймає -->
                             <div v-if="unsupportedCharsByItem[block.id]" class="case-block__error" role="alert">
                                 <p class="case-block__error-text">
-                                    Сервер не приймає емодзі:
-                                    <span class="case-block__error-chars">{{ unsupportedCharsByItem[block.id].join(' ') }}</span>.
-                                    Приберіть їх, щоб зміни збереглися.
+                                    У вашому тексті недопустимі символи або емоджі, дозвольте їх прибрати
                                 </p>
                                 <button type="button" class="case-block__error-fix" @click="removeUnsupported(block)">
                                     Прибрати
@@ -1094,11 +1092,6 @@ export default {
 
       &-text {
           margin: 0;
-      }
-
-      &-chars {
-          font-size: 16px;
-          letter-spacing: 2px;
       }
 
       &-fix {
